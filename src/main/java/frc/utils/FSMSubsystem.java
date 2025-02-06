@@ -46,7 +46,6 @@ public abstract class FSMSubsystem extends SubsystemBase {
     protected abstract void enterNewState();
     protected abstract void exitCurrentState();
     protected abstract void executeCurrentStateBehavior();
-    public abstract void resetToInitialState();
     public abstract void stop();
     public abstract boolean isInState(Enum<?> state);
     public abstract Enum<?> getCurrentState();
