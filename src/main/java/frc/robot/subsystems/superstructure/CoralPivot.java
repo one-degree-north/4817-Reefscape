@@ -126,16 +126,14 @@ public class CoralPivot extends FSMSubsystem {
 
   @Override
   protected void exitCurrentState() {
-    // is there anything i need to add for this
-    throw new UnsupportedOperationException("Unimplemented method 'exitCurrentState'");
+    //nothing
   }
 
 
 
   @Override
   protected void executeCurrentStateBehavior() {
-    // is there anything i need to add for this
-    throw new UnsupportedOperationException("Unimplemented method 'executeCurrentStateBehavior'");
+    //nothing
   }
 
 
