@@ -19,8 +19,7 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
-  private final CommandPS5Controller m_driverController =
-      new CommandPS5Controller(1);
+  private final CommandPS5Controller m_driverController = new CommandPS5Controller(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
