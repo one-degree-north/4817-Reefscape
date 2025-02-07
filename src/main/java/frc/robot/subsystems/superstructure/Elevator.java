@@ -25,9 +25,9 @@ import frc.utils.TalonFXConfigurator;
 @Logged
 public class Elevator extends FSMSubsystem {
     // Constants
-    private static final int m_elevatorMasterID = 10;
-    private static final int m_elevatorSlaveID = 11;
-    private static final int m_magneticLimitSwitchID = 1;
+    private static final int ELEVATOR_MASTER_ID = 10;
+    private static final int ELEVATOR_SLAVE_ID = 11;
+    private static final int MAGNETIC_LIMIT_SWITCH_ID = 1;
     private static final double kP = 0.1;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
@@ -35,16 +35,16 @@ public class Elevator extends FSMSubsystem {
     private static final double kV = 0.12;
     private static final double kA = 0.0;
     private static final double kG = 0.0;
-    private static final double m_mechanismRatio = 1.0;
-    private static final double m_mmAcceleration = 100.0;
-    private static final double m_mmCruiseVelocity = 200.0;
-    private static final double m_mmJerk = 1000.0;
-    private static final double m_dockedPos = 0.0;
-    private static final double m_l1Pos = 10.0;
-    private static final double m_l2Pos = 20.0;
-    private static final double m_l3Pos = 30.0;
-    private static final double m_l4Pos = 40.0;
-    private static final double m_allowedError = 0.5;
+    private static final double ELEVATOR_GEAR_RATIO = 1.0;
+    private static final double mmAcceleration = 100.0;
+    private static final double mmCruiseVelocity = 200.0;
+    private static final double mmJerk = 1000.0;
+    private static final double ELEVATOR_DOCKED_POS = 0.0;
+    private static final double ELEVATOR_L1_POS = 10.0;
+    private static final double ELEVATOR_L2_POS = 20.0;
+    private static final double ELEVATOR_L3_POS = 30.0;
+    private static final double ELEVATOR_L4_POS = 40.0;
+    private static final double ELEVATOR_ALLOWED_ERROR = 0.5;
 
     private TalonFX m_elevatorMasterMotor;
     private TalonFX m_elevatorSlaveMotor;
@@ -56,9 +56,9 @@ public class Elevator extends FSMSubsystem {
 
     public Elevator() {
         setName("Elevator");
-        m_elevatorMasterMotor = new TalonFX(m_elevatorMasterID, "rio");
-        m_elevatorSlaveMotor = new TalonFX(m_elevatorSlaveID, "rio");
-        m_bottomLimitSwitch = new DigitalInput(m_magneticLimitSwitchID);
+        m_elevatorMasterMotor = new TalonFX(ELEVATOR_MASTER_ID, "rio");
+        m_elevatorSlaveMotor = new TalonFX(ELEVATOR_SLAVE_ID, "rio");
+        m_bottomLimitSwitch = new DigitalInput(MAGNETIC_LIMIT_SWITCH_ID);
         motorConfigurations();
     }
 
@@ -69,10 +69,10 @@ public class Elevator extends FSMSubsystem {
             m_currentNeutralMode,
             InvertedValue.Clockwise_Positive,
             kP, kI, kD, kS, kV, kA, kG,
-            m_mechanismRatio,
-            m_mmAcceleration,
-            m_mmCruiseVelocity,
-            m_mmJerk
+            ELEVATOR_GEAR_RATIO,
+            mmAcceleration,
+            mmCruiseVelocity,
+            mmJerk
         );
 
         TalonFXConfigurator.configureTalonFX(
@@ -106,7 +106,6 @@ public class Elevator extends FSMSubsystem {
         m_currentNeutralMode = (m_currentNeutralMode == NeutralModeValue.Brake) 
             ? NeutralModeValue.Coast 
             : NeutralModeValue.Brake;
-
         motorConfigurations();
 
         SmartDashboard.putString("Elevator Idle Mode", m_currentNeutralMode.toString());
@@ -131,9 +130,9 @@ public class Elevator extends FSMSubsystem {
         return elevatorCharacterization.dynamic(direction);
     }
 
-    public boolean isElevatorAtSetpoint() {
+    public boolean isElevatorAtGoal() {
         return Math.abs(m_elevatorMasterMotor.getPosition().getValueAsDouble() - 
-               ((ElevatorStates)getCurrentState()).getSetpointValue()) < m_allowedError;
+               ((ElevatorStates)getCurrentState()).getSetpointValue()) < ELEVATOR_ALLOWED_ERROR;
     }
 
     @Override
@@ -150,24 +149,6 @@ public class Elevator extends FSMSubsystem {
     @Override
     protected void executeCurrentStateBehavior() {
         // Continuous behavior for the current state, if any
-    }
-
-    public enum ElevatorStates {
-        ELEVATOR_DOCKED(m_dockedPos),
-        ELEVATOR_L1(m_l1Pos),
-        ELEVATOR_L2(m_l2Pos),
-        ELEVATOR_L3(m_l3Pos),
-        ELEVATOR_L4(m_l4Pos);
-
-        private final double setpointValue;
-
-        ElevatorStates(double setpointValue) {
-            this.setpointValue = setpointValue;
-        }
-
-        public double getSetpointValue() {
-            return setpointValue;
-        }
     }
 
     @Override
@@ -196,5 +177,23 @@ public class Elevator extends FSMSubsystem {
     @Override
     protected Enum<?>[] getStates() {
         return ElevatorStates.values();
+    }
+
+    public enum ElevatorStates {
+        ELEVATOR_DOCKED(ELEVATOR_DOCKED_POS),
+        ELEVATOR_L1(ELEVATOR_L1_POS),
+        ELEVATOR_L2(ELEVATOR_L2_POS),
+        ELEVATOR_L3(ELEVATOR_L3_POS),
+        ELEVATOR_L4(ELEVATOR_L4_POS);
+
+        private final double setpointValue;
+
+        ElevatorStates(double setpointValue) {
+            this.setpointValue = setpointValue;
+        }
+
+        public double getSetpointValue() {
+            return setpointValue;
+        }
     }
 }
