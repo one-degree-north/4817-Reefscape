@@ -89,7 +89,7 @@ public class CoralPivot extends FSMSubsystem {
     new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
-            m_coralPivotMotor.setVoltage(volts.in(Volt));
+          m_coralPivotMotor.setVoltage(volts.in(Volt));
         },
         null,
         this
@@ -112,7 +112,10 @@ public class CoralPivot extends FSMSubsystem {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    update(); // Call the FSMSubsystem's update method
+
+        SmartDashboard.putString("Coral Pivot State", getCurrentState().toString());
+        SmartDashboard.putNumber("Coral Pivot Position", m_coralPivotMotor.getPosition().getValueAsDouble());
   }
 
   @Override
