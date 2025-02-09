@@ -152,14 +152,6 @@ public class Elevator extends FSMSubsystem {
     }
 
     @Override
-    public void periodic() {
-        update(); // Call the FSMSubsystem's update method
-
-        SmartDashboard.putString("ElevatorState", getCurrentState().toString());
-        SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
-    }
-
-    @Override
     public void stop() {
         m_elevatorMasterMotor.stopMotor();
     }
@@ -175,8 +167,21 @@ public class Elevator extends FSMSubsystem {
     }
 
     @Override
+    public Enum<?> getDesiredState() { 
+        return desiredState;
+    }
+
+    @Override
     protected Enum<?>[] getStates() {
         return ElevatorStates.values();
+    }
+
+    @Override
+    public void periodic() {
+        update();
+
+        SmartDashboard.putString("ElevatorState", getCurrentState().toString());
+        SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
     }
 
     public enum ElevatorStates {

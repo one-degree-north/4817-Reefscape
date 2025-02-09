@@ -20,8 +20,6 @@ import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
 public class CoralPivot extends FSMSubsystem {
-  /** Creates a new CoralPivot. */
-
   //Constants
 
   private static final int CORAL_PIVOT_ID = 0;
@@ -45,7 +43,7 @@ public class CoralPivot extends FSMSubsystem {
 
   private MotionMagicVoltage m_motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     
-  private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake; //what is this
+  private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
 
   public CoralPivot() {
     setName("Coral Pivot");
@@ -81,7 +79,7 @@ public class CoralPivot extends FSMSubsystem {
     m_currentNeutralMode = (m_currentNeutralMode == NeutralModeValue.Brake) 
         ? NeutralModeValue.Coast 
         : NeutralModeValue.Brake;
-    motorConfigurations(); //why are you configuring motor here
+    motorConfigurations();
     SmartDashboard.putString("Coral Pivot Idle Mode", m_currentNeutralMode.toString());
   }
 
@@ -106,16 +104,7 @@ public class CoralPivot extends FSMSubsystem {
 
   public boolean isCoralPivotAtGoal() {
     return Math.abs(m_coralPivotMotor.getPosition().getValueAsDouble() - 
-        ((CoralPivotStates)getCurrentState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
-  }
-
-
-  @Override
-  public void periodic() {
-    update(); // Call the FSMSubsystem's update method
-
-        SmartDashboard.putString("Coral Pivot State", getCurrentState().toString());
-        SmartDashboard.putNumber("Coral Pivot Position", m_coralPivotMotor.getPosition().getValueAsDouble());
+        ((CoralPivotStates)getDesiredState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
   }
 
   @Override
@@ -129,39 +118,42 @@ public class CoralPivot extends FSMSubsystem {
     //nothing
   }
 
-
-
   @Override
   protected void executeCurrentStateBehavior() {
     //nothing
   }
-
-
 
   @Override
   public void stop() {
     m_coralPivotMotor.stopMotor();
   }
 
-
-
   @Override
   public boolean isInState(Enum<?> state) {
     return getCurrentState() == state;
   }
-
-
 
   @Override
   public Enum<?> getCurrentState() {
     return currentState;
   }
 
-
+  @Override
+  public Enum<?> getDesiredState() {
+    return desiredState;
+  }
 
   @Override
   protected Enum<?>[] getStates() {
     return CoralPivotStates.values();
+  }
+
+  @Override
+  public void periodic() {
+    update();
+
+    SmartDashboard.putString("Coral Pivot State", getCurrentState().toString());
+    SmartDashboard.putNumber("Coral Pivot Position", m_coralPivotMotor.getPosition().getValueAsDouble());
   }
 
   public enum CoralPivotStates {

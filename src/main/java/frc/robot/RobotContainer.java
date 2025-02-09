@@ -27,6 +27,7 @@ public class RobotContainer {
     configureBindings();
   }
   private void configureBindings() {
+    //ALGAE: docked (both rollers not spining), intaking (both rollers spinning), ramping (pivot extended, end effector rolling), shoot(all motors spinning, pivot fully out), processor(pivot pulled back, stationary roller spinning)
   }
 public Command getAutonomousCommand() {
     return null;

@@ -116,10 +116,6 @@ public class LEDs extends FSMSubsystem {
         return LEDStates.values();
     }
 
-    public enum LEDStates {
-        IDLE, INTAKED_CORAL, INTAKED_ALGAE, INTAKED_BOTH
-    }
-
     public void setAlliance(Alliance alliance) {
         this.alliance = alliance;
     }
@@ -128,6 +124,10 @@ public class LEDs extends FSMSubsystem {
     public void periodic() {
         update();
         alliance = DriverStation.getAlliance().get();
+    }
+
+    public enum LEDStates {
+        IDLE, INTAKED_CORAL, INTAKED_ALGAE, INTAKED_BOTH
     }
 }
 

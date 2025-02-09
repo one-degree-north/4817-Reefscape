@@ -4,12 +4,16 @@
 
 package frc.utils;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class FSMSubsystem extends SubsystemBase {
     protected Enum<?> currentState = null;
     protected Enum<?> desiredState = null;
     private boolean statesRegistered = false;
+    private boolean waitingForCondition = false;
+    private BooleanSupplier transitionCondition = null;
 
     public void registerStates(Enum<?> initialState) {
         if (!statesRegistered) {
@@ -23,16 +27,29 @@ public abstract class FSMSubsystem extends SubsystemBase {
         if (!statesRegistered) {
             return; // Do nothing if states are not registered yet
         }
-        if (currentState != desiredState) {
+        if (waitingForCondition && transitionCondition.getAsBoolean()) {
+            handleStateTransition();
+            waitingForCondition = false;
+            transitionCondition = null;
+        } else if (currentState != desiredState && !waitingForCondition) {
             handleStateTransition();
         }
         executeCurrentStateBehavior();
+    }
+
+    // Method to set the desired state with a condition
+    public void setDesiredStateWithCondition(Enum<?> newState, BooleanSupplier condition) {
+        this.desiredState = newState;
+        this.waitingForCondition = true;
+        this.transitionCondition = condition;
     }
 
 
     // Method to set the desired state
     public void setDesiredState(Enum<?> newState) {
         this.desiredState = newState;
+        this.waitingForCondition = false;
+        this.transitionCondition = null;
     }
 
     // Handle the transition between states
@@ -49,6 +66,7 @@ public abstract class FSMSubsystem extends SubsystemBase {
     public abstract void stop();
     public abstract boolean isInState(Enum<?> state);
     public abstract Enum<?> getCurrentState();
+    public abstract Enum<?> getDesiredState();
 
     // Abstract method to define states
     protected abstract Enum<?>[] getStates();
