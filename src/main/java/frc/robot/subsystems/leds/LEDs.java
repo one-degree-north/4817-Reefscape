@@ -112,6 +112,11 @@ public class LEDs extends FSMSubsystem {
     }
 
     @Override
+    public Enum<?> getDesiredState() {
+        return desiredState;
+    }
+
+    @Override
     protected Enum<?>[] getStates() {
         return LEDStates.values();
     }
