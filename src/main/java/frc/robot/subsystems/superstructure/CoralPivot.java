@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
+@Logged
 public class CoralPivot extends FSMSubsystem {
   //Constants
 
@@ -41,7 +43,7 @@ public class CoralPivot extends FSMSubsystem {
 
   private TalonFX m_coralPivotMotor;
 
-  private MotionMagicVoltage m_motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+  private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     
   private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
 
@@ -110,7 +112,7 @@ public class CoralPivot extends FSMSubsystem {
   @Override
   protected void enterNewState() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
-    setControl(m_coralPivotMotor, m_motionMagicVoltage.withPosition(newState.getSetpointValue()));
+    setControl(m_coralPivotMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
   }
 
   @Override

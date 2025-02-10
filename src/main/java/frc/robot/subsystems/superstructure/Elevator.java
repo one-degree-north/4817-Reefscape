@@ -50,7 +50,7 @@ public class Elevator extends FSMSubsystem {
     private TalonFX m_elevatorSlaveMotor;
     private DigitalInput m_bottomLimitSwitch;
 
-    private MotionMagicVoltage m_motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     
     private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
 
@@ -107,8 +107,6 @@ public class Elevator extends FSMSubsystem {
             ? NeutralModeValue.Coast 
             : NeutralModeValue.Brake;
         motorConfigurations();
-
-        SmartDashboard.putString("Elevator Idle Mode", m_currentNeutralMode.toString());
     }
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
@@ -138,7 +136,7 @@ public class Elevator extends FSMSubsystem {
     @Override
     protected void enterNewState() {
         ElevatorStates newState = (ElevatorStates)getCurrentState();
-        setControl(m_elevatorMasterMotor, m_motionMagicVoltage.withPosition(newState.getSetpointValue()));
+        setControl(m_elevatorMasterMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
     }
 
     @Override

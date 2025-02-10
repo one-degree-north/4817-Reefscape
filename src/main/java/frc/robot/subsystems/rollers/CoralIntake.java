@@ -6,17 +6,19 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
+@Logged
 public class CoralIntake extends FSMSubsystem {
   // Constants
-  private static final int m_leftRollerID = 10; // Replace with actual ID
-  private static final int m_rightRollerID = 11; // Replace with actual ID
-  private static final double m_rollerIntakeVoltage = 6.0; // Replace with actual voltage
-  private static final double m_rollerOuttakeVoltage = -6.0; // Replace with actual voltage
-  private static final double m_rollerLvl1Voltage = 3.0; // Replace with actual voltage for LVL1
+  private static final int LEFT_ROLLER_ID = 10; // Replace with actual ID
+  private static final int RIGHT_ROLLER_ID = 11; // Replace with actual ID
+  private static final double ROLLER_INTAKE_VOLTAGE = 6.0; // Replace with actual voltage
+  private static final double ROLLER_OUTTAKE_VOLTAGE = -6.0; // Replace with actual voltage
+  private static final double ROLLER_LVL1_VOLTAGE = 3.0; // Replace with actual voltage for LVL1
 
   private TalonFX m_leftRoller;
   private TalonFX m_rightRoller;
@@ -26,8 +28,8 @@ public class CoralIntake extends FSMSubsystem {
 
   public CoralIntake() {
     setName("CoralIntake");
-    m_leftRoller = new TalonFX(m_leftRollerID, "rio");
-    m_rightRoller = new TalonFX(m_rightRollerID, "rio");
+    m_leftRoller = new TalonFX(LEFT_ROLLER_ID, "rio");
+    m_rightRoller = new TalonFX(RIGHT_ROLLER_ID, "rio");
     configureMotors();
   }
 
@@ -68,7 +70,7 @@ public class CoralIntake extends FSMSubsystem {
     CoralStates newState = (CoralStates)getCurrentState();
     switch (newState) {
       case ROLLER_LVL1:
-        setRollersVoltage(m_rollerLvl1Voltage, 0); // Only left roller moves
+        setRollersVoltage(ROLLER_LVL1_VOLTAGE, 0); // Only left roller moves
         break;
       default:
         setRollersVoltage(newState.getSetpointValue(), newState.getSetpointValue());
@@ -119,9 +121,9 @@ public Enum<?> getDesiredState() {
   }
 
   public enum CoralStates {
-    ROLLER_INTAKE(m_rollerIntakeVoltage),
-    ROLLER_OUTTAKE(m_rollerOuttakeVoltage),
-    ROLLER_LVL1(m_rollerLvl1Voltage); // New state for LVL1
+    ROLLER_INTAKE(ROLLER_INTAKE_VOLTAGE),
+    ROLLER_OUTTAKE(ROLLER_OUTTAKE_VOLTAGE),
+    ROLLER_LVL1(ROLLER_LVL1_VOLTAGE); // New state for LVL1
 
     private final double setpointValue;
 
