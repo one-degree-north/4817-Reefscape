@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class CoralIntake extends FSMSubsystem {
   // Constants
   private static final int LEFT_ROLLER_ID = 10; // Replace with actual ID

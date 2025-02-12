@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class AlgaePivot extends FSMSubsystem {
     // Constants
     private static final int ALGAE_PIVOT_ID = 20; // Replace with actual ID

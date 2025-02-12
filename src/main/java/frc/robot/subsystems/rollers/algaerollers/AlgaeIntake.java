@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class AlgaeIntake extends FSMSubsystem {
     // Constants
     private static final int ALGAE_INTAKE_MASTER_ID = 40; // Replace with actual ID

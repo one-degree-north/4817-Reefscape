@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class AlgaeIndexer extends FSMSubsystem {
     // Constants
     private static final int INDEXER_MOTOR_ID = 30; // Replace with actual ID

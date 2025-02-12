@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class Elevator extends FSMSubsystem {
     // Constants
     private static final int ELEVATOR_MASTER_ID = 10;
@@ -45,6 +44,7 @@ public class Elevator extends FSMSubsystem {
     private static final double ELEVATOR_L3_POS = 30.0;
     private static final double ELEVATOR_L4_POS = 40.0;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.5;
+    private static final double ELEVATOR_HP_POS = 50.0;
 
     private TalonFX m_elevatorMasterMotor;
     private TalonFX m_elevatorSlaveMotor;
@@ -53,141 +53,142 @@ public class Elevator extends FSMSubsystem {
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     
     private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
-
-    public Elevator() {
-        setName("Elevator");
-        m_elevatorMasterMotor = new TalonFX(ELEVATOR_MASTER_ID, "rio");
-        m_elevatorSlaveMotor = new TalonFX(ELEVATOR_SLAVE_ID, "rio");
-        m_bottomLimitSwitch = new DigitalInput(MAGNETIC_LIMIT_SWITCH_ID);
-        motorConfigurations();
-    }
-
-    private void motorConfigurations() {
-        TalonFXConfigurator.configureTalonFX(
-            m_elevatorMasterMotor,
-            "KrakenX60",
-            m_currentNeutralMode,
-            InvertedValue.Clockwise_Positive,
-            kP, kI, kD, kS, kV, kA, kG,
-            ELEVATOR_GEAR_RATIO,
-            mmAcceleration,
-            mmCruiseVelocity,
-            mmJerk
-        );
-
-        TalonFXConfigurator.configureTalonFX(
-            m_elevatorSlaveMotor,
-            "KrakenX60",
-            m_currentNeutralMode,
-            InvertedValue.Clockwise_Positive,
-            null, null, null, null, null, null, null, null, null, null, null
-        );
-
-        Follower followerConfig = new Follower(m_elevatorMasterMotor.getDeviceID(), true);
-        m_elevatorSlaveMotor.setControl(followerConfig);
-    }
-
-    public boolean isElevatorDown() {
-        return m_bottomLimitSwitch.get();
-    }
-
-    private void setControl(TalonFX motor, ControlRequest req) {
-        if (motor.isAlive()) {
-            motor.setControl(req);
+    
+        public Elevator() {
+            setName("Elevator");
+            m_elevatorMasterMotor = new TalonFX(ELEVATOR_MASTER_ID, "rio");
+            m_elevatorSlaveMotor = new TalonFX(ELEVATOR_SLAVE_ID, "rio");
+            m_bottomLimitSwitch = new DigitalInput(MAGNETIC_LIMIT_SWITCH_ID);
+            motorConfigurations();
         }
-    }
-
-    public void resetElevatorPosition() {
-        m_elevatorMasterMotor.setPosition(0);
-        m_elevatorSlaveMotor.setPosition(0);
-    }
-
-    public void toggleIdleMode() {
-        m_currentNeutralMode = (m_currentNeutralMode == NeutralModeValue.Brake) 
-            ? NeutralModeValue.Coast 
-            : NeutralModeValue.Brake;
-        motorConfigurations();
-    }
-
-    private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
-        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null),
-        new SysIdRoutine.Mechanism(
-            (Voltage volts) -> {
-                m_elevatorMasterMotor.setVoltage(volts.in(Volt));
-            },
-            null,
-            this
-        )
-    );
-
-    public Command elevatorSysIDQuasistatic(SysIdRoutine.Direction direction) {
-        return elevatorCharacterization.quasistatic(direction);
-    }
-
-    public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
-        return elevatorCharacterization.dynamic(direction);
-    }
-
-    public boolean isElevatorAtGoal() {
-        return Math.abs(m_elevatorMasterMotor.getPosition().getValueAsDouble() - 
-               ((ElevatorStates)getCurrentState()).getSetpointValue()) < ELEVATOR_ALLOWED_ERROR;
-    }
-
-    @Override
-    protected void enterNewState() {
-        ElevatorStates newState = (ElevatorStates)getCurrentState();
-        setControl(m_elevatorMasterMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // No specific exit actions needed
-    }
-
-    @Override
-    protected void executeCurrentStateBehavior() {
-        // Continuous behavior for the current state, if any
-    }
-
-    @Override
-    public void stop() {
-        m_elevatorMasterMotor.stopMotor();
-    }
-
-    @Override
-    public boolean isInState(Enum<?> state) {
-        return getCurrentState() == state;
-    }
-
-    @Override
-    public Enum<?> getCurrentState() {
-        return currentState;
-    }
-
-    @Override
-    public Enum<?> getDesiredState() { 
-        return desiredState;
-    }
-
-    @Override
-    protected Enum<?>[] getStates() {
-        return ElevatorStates.values();
-    }
-
-    @Override
-    public void periodic() {
-        update();
-
-        SmartDashboard.putString("ElevatorState", getCurrentState().toString());
-        SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
-    }
-
-    public enum ElevatorStates {
-        ELEVATOR_DOCKED(ELEVATOR_DOCKED_POS),
-        ELEVATOR_L1(ELEVATOR_L1_POS),
-        ELEVATOR_L2(ELEVATOR_L2_POS),
-        ELEVATOR_L3(ELEVATOR_L3_POS),
-        ELEVATOR_L4(ELEVATOR_L4_POS);
+    
+        private void motorConfigurations() {
+            TalonFXConfigurator.configureTalonFX(
+                m_elevatorMasterMotor,
+                "KrakenX60",
+                m_currentNeutralMode,
+                InvertedValue.Clockwise_Positive,
+                kP, kI, kD, kS, kV, kA, kG,
+                ELEVATOR_GEAR_RATIO,
+                mmAcceleration,
+                mmCruiseVelocity,
+                mmJerk
+            );
+    
+            TalonFXConfigurator.configureTalonFX(
+                m_elevatorSlaveMotor,
+                "KrakenX60",
+                m_currentNeutralMode,
+                InvertedValue.Clockwise_Positive,
+                null, null, null, null, null, null, null, null, null, null, null
+            );
+    
+            Follower followerConfig = new Follower(m_elevatorMasterMotor.getDeviceID(), true);
+            m_elevatorSlaveMotor.setControl(followerConfig);
+        }
+    
+        public boolean isElevatorDown() {
+            return m_bottomLimitSwitch.get();
+        }
+    
+        private void setControl(TalonFX motor, ControlRequest req) {
+            if (motor.isAlive()) {
+                motor.setControl(req);
+            }
+        }
+    
+        public void resetElevatorPosition() {
+            m_elevatorMasterMotor.setPosition(0);
+            m_elevatorSlaveMotor.setPosition(0);
+        }
+    
+        public void toggleIdleMode() {
+            m_currentNeutralMode = (m_currentNeutralMode == NeutralModeValue.Brake) 
+                ? NeutralModeValue.Coast 
+                : NeutralModeValue.Brake;
+            motorConfigurations();
+        }
+    
+        private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
+            new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null),
+            new SysIdRoutine.Mechanism(
+                (Voltage volts) -> {
+                    m_elevatorMasterMotor.setVoltage(volts.in(Volt));
+                },
+                null,
+                this
+            )
+        );
+    
+        public Command elevatorSysIDQuasistatic(SysIdRoutine.Direction direction) {
+            return elevatorCharacterization.quasistatic(direction);
+        }
+    
+        public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
+            return elevatorCharacterization.dynamic(direction);
+        }
+    
+        public boolean isElevatorAtGoal() {
+            return Math.abs(m_elevatorMasterMotor.getPosition().getValueAsDouble() - 
+                   ((ElevatorStates)getCurrentState()).getSetpointValue()) < ELEVATOR_ALLOWED_ERROR;
+        }
+    
+        @Override
+        protected void enterNewState() {
+            ElevatorStates newState = (ElevatorStates)getCurrentState();
+            setControl(m_elevatorMasterMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
+        }
+    
+        @Override
+        protected void exitCurrentState() {
+            // No specific exit actions needed
+        }
+    
+        @Override
+        protected void executeCurrentStateBehavior() {
+            // Continuous behavior for the current state, if any
+        }
+    
+        @Override
+        public void stop() {
+            m_elevatorMasterMotor.stopMotor();
+        }
+    
+        @Override
+        public boolean isInState(Enum<?> state) {
+            return getCurrentState() == state;
+        }
+    
+        @Override
+        public Enum<?> getCurrentState() {
+            return currentState;
+        }
+    
+        @Override
+        public Enum<?> getDesiredState() { 
+            return desiredState;
+        }
+    
+        @Override
+        protected Enum<?>[] getStates() {
+            return ElevatorStates.values();
+        }
+    
+        @Override
+        public void periodic() {
+            update();
+    
+            SmartDashboard.putString("ElevatorState", getCurrentState().toString());
+            SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
+        }
+    
+        public enum ElevatorStates {
+            ELEVATOR_DOCKED(ELEVATOR_DOCKED_POS),
+            ELEVATOR_L1(ELEVATOR_L1_POS),
+            ELEVATOR_L2(ELEVATOR_L2_POS),
+            ELEVATOR_L3(ELEVATOR_L3_POS),
+            ELEVATOR_L4(ELEVATOR_L4_POS),
+            ELEVATOR_HP(ELEVATOR_HP_POS);
 
         private final double setpointValue;
 

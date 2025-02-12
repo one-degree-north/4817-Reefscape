@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
-@Logged
 public class CoralPivot extends FSMSubsystem {
   //Constants
 
@@ -104,7 +103,7 @@ public class CoralPivot extends FSMSubsystem {
     return elevatorCharacterization.dynamic(direction);
   }
 
-  public boolean isCoralPivotAtGoal() {
+  public boolean isAtGoal() {
     return Math.abs(m_coralPivotMotor.getPosition().getValueAsDouble() - 
         ((CoralPivotStates)getDesiredState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
   }
