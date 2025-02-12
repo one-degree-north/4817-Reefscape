@@ -25,35 +25,80 @@ public class Superstructure extends FSMSubsystem {
         SuperstructureStates newState = (SuperstructureStates) getDesiredState();
         switch (newState) {
             case ALGAE_EXTENDED:
-                s_algaePivot.setDesiredStateWithCondition(AlgaePivot.AlgaeStates.INTAKING, s_algaePivot::isAtSetpoint);
+                s_algaePivot
+                    .setDesiredStateWithCondition(
+                        AlgaePivot.AlgaeStates.INTAKING,
+                        s_algaePivot::isAtSetpoint);
                 break;
             case ALGAE_DOCKED:
-                s_algaePivot.setDesiredStateWithCondition(AlgaePivot.AlgaeStates.DOCKED, s_algaePivot::isAtSetpoint);
+                s_algaePivot
+                    .setDesiredStateWithCondition(
+                        AlgaePivot.AlgaeStates.DOCKED,
+                        s_algaePivot::isAtSetpoint);
                 break;
             case CORAL_LVL1:
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_L1, s_elevator::isElevatorAtGoal);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_L1,
+                        s_elevator::isElevatorAtGoal);
                 break;
             case CORAL_LVL2:
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_L2, s_elevator::isElevatorAtGoal);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_L2,
+                        s_elevator::isElevatorAtGoal);
                 break;
             case CORAL_LVL3:
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_L3, s_elevator::isElevatorAtGoal);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_L3,
+                        s_elevator::isElevatorAtGoal);
                 break;
             case CORAL_HP:
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_HUMAN_PLAYER, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_HP, s_elevator::isElevatorAtGoal);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_HUMAN_PLAYER,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_HP,
+                        s_elevator::isElevatorAtGoal);
                 break;
             case CORAL_LVL4:
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_L4, s_elevator::isElevatorAtGoal);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_L4,
+                        s_elevator::isElevatorAtGoal);
                 break;
             case FULLY_DOCKED:
-                s_algaePivot.setDesiredStateWithCondition(AlgaePivot.AlgaeStates.DOCKED, s_algaePivot::isAtSetpoint);
-                s_coralPivot.setDesiredStateWithCondition(CoralPivot.CoralPivotStates.CORAL_PIVOT_DOCKED, s_coralPivot::isAtGoal);
-                s_elevator.setDesiredStateWithCondition(Elevator.ElevatorStates.ELEVATOR_DOCKED, s_elevator::isElevatorAtGoal);
+                s_algaePivot
+                    .setDesiredStateWithCondition(
+                        AlgaePivot.AlgaeStates.DOCKED,
+                        s_algaePivot::isAtSetpoint);
+                s_coralPivot
+                    .setDesiredStateWithCondition(
+                        CoralPivot.CoralPivotStates.CORAL_PIVOT_DOCKED,
+                        s_coralPivot::isAtGoal);
+                s_elevator
+                    .setDesiredStateWithCondition(
+                        Elevator.ElevatorStates.ELEVATOR_DOCKED,
+                        s_elevator::isElevatorAtGoal);
                 break;
         }
     }

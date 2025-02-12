@@ -80,7 +80,9 @@ public class Elevator extends FSMSubsystem {
                 "KrakenX60",
                 m_currentNeutralMode,
                 InvertedValue.Clockwise_Positive,
-                null, null, null, null, null, null, null, null, null, null, null
+                null, null, null, null, null, null, null,
+                 null, 
+                 null, null, null
             );
     
             Follower followerConfig = new Follower(m_elevatorMasterMotor.getDeviceID(), true);
