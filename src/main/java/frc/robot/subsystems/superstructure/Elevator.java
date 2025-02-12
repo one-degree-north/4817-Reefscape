@@ -35,9 +35,9 @@ public class Elevator extends FSMSubsystem {
     private static final double kA = 0.0;
     private static final double kG = 0.0;
     private static final double ELEVATOR_GEAR_RATIO = 1.0;
-    private static final double mmAcceleration = 100.0;
-    private static final double mmCruiseVelocity = 200.0;
-    private static final double mmJerk = 1000.0;
+    private static final double MM_ACCELERATION = 100.0;
+    private static final double MM_CRUISE_VELOCITY = 200.0;
+    private static final double MM_JERK = 1000.0;
     private static final double ELEVATOR_DOCKED_POS = 0.0;
     private static final double ELEVATOR_L1_POS = 10.0;
     private static final double ELEVATOR_L2_POS = 20.0;
@@ -70,9 +70,9 @@ public class Elevator extends FSMSubsystem {
                 InvertedValue.Clockwise_Positive,
                 kP, kI, kD, kS, kV, kA, kG,
                 ELEVATOR_GEAR_RATIO,
-                mmAcceleration,
-                mmCruiseVelocity,
-                mmJerk
+                MM_ACCELERATION,
+                MM_CRUISE_VELOCITY,
+                MM_JERK
             );
     
             TalonFXConfigurator.configureTalonFX(
@@ -130,7 +130,7 @@ public class Elevator extends FSMSubsystem {
             return elevatorCharacterization.dynamic(direction);
         }
     
-        public boolean isElevatorAtGoal() {
+        public boolean atGoal() {
             return Math.abs(m_elevatorMasterMotor.getPosition().getValueAsDouble() - 
                    ((ElevatorStates)getCurrentState()).getSetpointValue()) < ELEVATOR_ALLOWED_ERROR;
         }
@@ -185,12 +185,12 @@ public class Elevator extends FSMSubsystem {
         }
     
         public enum ElevatorStates {
-            ELEVATOR_DOCKED(ELEVATOR_DOCKED_POS),
-            ELEVATOR_L1(ELEVATOR_L1_POS),
-            ELEVATOR_L2(ELEVATOR_L2_POS),
-            ELEVATOR_L3(ELEVATOR_L3_POS),
-            ELEVATOR_L4(ELEVATOR_L4_POS),
-            ELEVATOR_HP(ELEVATOR_HP_POS);
+            DOCKED(ELEVATOR_DOCKED_POS),
+            L1(ELEVATOR_L1_POS),
+            L2(ELEVATOR_L2_POS),
+            L3(ELEVATOR_L3_POS),
+            L4(ELEVATOR_L4_POS),
+            HUMAN_PLAYER(ELEVATOR_HP_POS);
 
         private final double setpointValue;
 

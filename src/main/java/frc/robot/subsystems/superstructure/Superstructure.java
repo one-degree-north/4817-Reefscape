@@ -26,79 +26,91 @@ public class Superstructure extends FSMSubsystem {
         switch (newState) {
             case ALGAE_EXTENDED:
                 s_algaePivot
-                    .setDesiredStateWithCondition(
-                        AlgaePivot.AlgaeStates.INTAKING,
-                        s_algaePivot::isAtSetpoint);
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.INTAKING);
+                s_coralPivot
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.DOCKED);
+                s_elevator
+                    .setDesiredState(
+                        Elevator.ElevatorStates.DOCKED);
                 break;
             case ALGAE_DOCKED:
                 s_algaePivot
-                    .setDesiredStateWithCondition(
-                        AlgaePivot.AlgaeStates.DOCKED,
-                        s_algaePivot::isAtSetpoint);
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
+                s_coralPivot
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.DOCKED);
+                s_elevator
+                    .setDesiredState(
+                        Elevator.ElevatorStates.DOCKED);
                 break;
             case CORAL_LVL1:
+                s_algaePivot
+            .       setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
-                        s_coralPivot::isAtGoal);
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_L1,
-                        s_elevator::isElevatorAtGoal);
+                    .setDesiredState(
+                        Elevator.ElevatorStates.L1);
                 break;
             case CORAL_LVL2:
+                s_algaePivot
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
-                        s_coralPivot::isAtGoal);
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_L2,
-                        s_elevator::isElevatorAtGoal);
+                    .setDesiredState(
+                        Elevator.ElevatorStates.L2);
                 break;
             case CORAL_LVL3:
+                s_algaePivot
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
-                        s_coralPivot::isAtGoal);
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_L3,
-                        s_elevator::isElevatorAtGoal);
+                    .setDesiredState(
+                        Elevator.ElevatorStates.L3);
                 break;
             case CORAL_HP:
+                s_algaePivot
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_HUMAN_PLAYER,
-                        s_coralPivot::isAtGoal);
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.HUMAN_PLAYER);
                 s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_HP,
-                        s_elevator::isElevatorAtGoal);
+                    .setDesiredState(
+                        Elevator.ElevatorStates.HUMAN_PLAYER);
                 break;
             case CORAL_LVL4:
-                s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_REEF,
-                        s_coralPivot::isAtGoal);
-                s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_L4,
-                        s_elevator::isElevatorAtGoal);
-                break;
-            case FULLY_DOCKED:
                 s_algaePivot
-                    .setDesiredStateWithCondition(
-                        AlgaePivot.AlgaeStates.DOCKED,
-                        s_algaePivot::isAtSetpoint);
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredStateWithCondition(
-                        CoralPivot.CoralPivotStates.CORAL_PIVOT_DOCKED,
-                        s_coralPivot::isAtGoal);
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredStateWithCondition(
-                        Elevator.ElevatorStates.ELEVATOR_DOCKED,
-                        s_elevator::isElevatorAtGoal);
+                    .setDesiredState(
+                        Elevator.ElevatorStates.L4);
+                break;
+            case STOWED:
+                s_algaePivot
+                    .setDesiredState(
+                        AlgaePivot.AlgaeStates.DOCKED);
+                s_coralPivot
+                    .setDesiredState(
+                        CoralPivot.CoralPivotStates.DOCKED);
+                s_elevator
+                    .setDesiredState(
+                        Elevator.ElevatorStates.DOCKED);
                 break;
         }
     }
@@ -111,7 +123,7 @@ public class Superstructure extends FSMSubsystem {
     @Override
     protected void executeCurrentStateBehavior() {
         // Check if all subsystems have reached their desired states
-        if (s_algaePivot.isAtSetpoint() && s_coralPivot.isAtGoal() && s_elevator.isElevatorAtGoal()) {
+        if (s_algaePivot.atGoal() && s_coralPivot.atGoal() && s_elevator.atGoal()) {
             setDesiredState(getCurrentState()); // Transition to the current state
         }
     }
@@ -152,6 +164,6 @@ public class Superstructure extends FSMSubsystem {
     public enum SuperstructureStates {
         ALGAE_EXTENDED, ALGAE_DOCKED,
         CORAL_LVL1, CORAL_LVL2, CORAL_LVL3,
-        CORAL_HP, CORAL_LVL4, FULLY_DOCKED
+        CORAL_HP, CORAL_LVL4, STOWED
     }
 }

@@ -4,13 +4,18 @@
 
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Volt;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -26,13 +31,13 @@ public class AlgaePivot extends FSMSubsystem {
     private static final double kV = 0.12;
     private static final double kA = 0.0;
     private static final double kG = 0.0;
-    private static final double mechanismRatio = 1.0;
-    private static final double mmAcceleration = 100.0;
-    private static final double mmCruiseVelocity = 200.0;
-    private static final double mmJerk = 1000.0;
+    private static final double MECHANISM_RATIO = 1.0;
+    private static final double MM_ACCELERATION = 100.0;
+    private static final double MM_CRUISE_VELOCITY = 200.0;
+    private static final double MM_JERK = 1000.0;
     private static final double POSITION_TOLERANCE = 0.1;
 
-    private TalonFX m_algaeIntakeMotor;
+    private TalonFX m_algaePivot;
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private NeutralModeValue currentNeutralMode = NeutralModeValue.Brake;
 
@@ -40,21 +45,21 @@ public class AlgaePivot extends FSMSubsystem {
 
     public AlgaePivot() {
         setName("AlgaeIntake");
-        m_algaeIntakeMotor = new TalonFX(ALGAE_PIVOT_ID, "rio");
+        m_algaePivot = new TalonFX(ALGAE_PIVOT_ID, "rio");
         configureMotor();
     }
 
     private void configureMotor() {
         TalonFXConfigurator.configureTalonFX(
-            m_algaeIntakeMotor,
+            m_algaePivot,
             "KrakenX60",
             currentNeutralMode,
             InvertedValue.Clockwise_Positive,
             kP, kI, kD, kS, kV, kA, kG,
-            mechanismRatio,
-            mmAcceleration,
-            mmCruiseVelocity,
-            mmJerk
+            MECHANISM_RATIO,
+            MM_ACCELERATION,
+            MM_CRUISE_VELOCITY,
+            MM_JERK
         );
     }
 
@@ -75,14 +80,14 @@ public class AlgaePivot extends FSMSubsystem {
     }
 
     private void setMotorPosition(double position) {
-        if (m_algaeIntakeMotor.isAlive()) {
-            m_algaeIntakeMotor.setControl(motionMagicVoltage.withPosition(position));
+        if (m_algaePivot.isAlive()) {
+            m_algaePivot.setControl(motionMagicVoltage.withPosition(position));
         }
     }
 
-    public boolean isAtSetpoint() {
+    public boolean atGoal() {
         AlgaeStates desiredState = (AlgaeStates) getDesiredState();
-        double currentPosition = m_algaeIntakeMotor.getPosition().getValueAsDouble();
+        double currentPosition = m_algaePivot.getPosition().getValueAsDouble();
         double targetPosition = desiredState.getSetpointValue();
         
         return Math.abs(currentPosition - targetPosition) <= POSITION_TOLERANCE;
@@ -94,10 +99,21 @@ public class AlgaePivot extends FSMSubsystem {
             : NeutralModeValue.Brake;
         configureMotor();
       }
+    
+    private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
+        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(2, Volts), null),
+        new SysIdRoutine.Mechanism(
+            (Voltage volts) -> {
+            m_algaePivot.setVoltage(volts.in(Volt));
+            },
+            null,
+            this
+        )
+    );
 
     @Override
     public void stop() {
-        m_algaeIntakeMotor.stopMotor();
+        m_algaePivot.stopMotor();
     }
 
     @Override
@@ -124,7 +140,7 @@ public class AlgaePivot extends FSMSubsystem {
     public void periodic() {
         update(); // Call the FSMSubsystem's update method
         SmartDashboard.putString("AlgaeIntakeState", getCurrentState().toString());
-        SmartDashboard.putNumber("AlgaeIntakePosition", m_algaeIntakeMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("AlgaeIntakePosition", m_algaePivot.getPosition().getValueAsDouble());
         SmartDashboard.putString("AlgaeIntakeNeutralMode", currentNeutralMode.toString());
     }
 

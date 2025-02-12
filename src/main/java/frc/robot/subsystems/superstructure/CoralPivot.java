@@ -32,9 +32,9 @@ public class CoralPivot extends FSMSubsystem {
   private static final double kA = 0.0;
   private static final double kG = 0.0;
   private static final double CORAL_PIVOT_GEAR_RATIO = 0;
-  private static final double mmAcceleration = 0;
-  private static final double mmCruiseVelocity = 0;
-  private static final double mmJerk = 0;
+  private static final double MM_ACCELERATION = 0;
+  private static final double MM_CRUISE_VELOCITY = 0;
+  private static final double MM_JERK = 0;
   private static final double CORAL_PIVOT_DOCKED_POS = 0.0;
   private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.0;
   private static final double CORAL_PIVOT_REEF_POS = 0.0;
@@ -60,9 +60,9 @@ public class CoralPivot extends FSMSubsystem {
       InvertedValue.Clockwise_Positive, //CHECK
       kP, kI, kD, kS, kV, kA, kG,
       CORAL_PIVOT_GEAR_RATIO,
-      mmAcceleration,
-      mmCruiseVelocity,
-      mmJerk
+      MM_ACCELERATION,
+      MM_CRUISE_VELOCITY,
+      MM_JERK
       );
   }
 
@@ -84,8 +84,8 @@ public class CoralPivot extends FSMSubsystem {
     SmartDashboard.putString("Coral Pivot Idle Mode", m_currentNeutralMode.toString());
   }
 
-  private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null),
+  private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
+    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(0.5, Volt), null),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
           m_coralPivotMotor.setVoltage(volts.in(Volt));
@@ -93,17 +93,17 @@ public class CoralPivot extends FSMSubsystem {
         null,
         this
     )
-    );
+  );
     
   public Command elevatorSysIDQuasistatic(SysIdRoutine.Direction direction) {
-    return elevatorCharacterization.quasistatic(direction);
+    return coralPivotCharacterization.quasistatic(direction);
   }
 
   public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
-    return elevatorCharacterization.dynamic(direction);
+    return coralPivotCharacterization.dynamic(direction);
   }
 
-  public boolean isAtGoal() {
+  public boolean atGoal() {
     return Math.abs(m_coralPivotMotor.getPosition().getValueAsDouble() - 
         ((CoralPivotStates)getDesiredState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
   }
@@ -158,9 +158,9 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   public enum CoralPivotStates {
-    CORAL_PIVOT_DOCKED(CORAL_PIVOT_DOCKED_POS),
-    CORAL_PIVOT_HUMAN_PLAYER(CORAL_PIVOT_HUMAN_PLAYER_POS),
-    CORAL_PIVOT_REEF(CORAL_PIVOT_REEF_POS);
+    DOCKED(CORAL_PIVOT_DOCKED_POS),
+    HUMAN_PLAYER(CORAL_PIVOT_HUMAN_PLAYER_POS),
+    REEF(CORAL_PIVOT_REEF_POS);
 
     private final double setpointValue;
 
