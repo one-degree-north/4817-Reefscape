@@ -66,7 +66,7 @@ public class CoralIntake extends FSMSubsystem {
 
   @Override
   protected void enterNewState() {
-    CoralStates newState = (CoralStates)getCurrentState();
+    CoralIntakeStates newState = (CoralIntakeStates)getCurrentState();
     switch (newState) {
       case ROLLER_LVL1:
         setRollersVoltage(ROLLER_LVL1_VOLTAGE, 0); // Only left roller moves
@@ -110,7 +110,7 @@ public Enum<?> getDesiredState() {
 
   @Override
   protected Enum<?>[] getStates() {
-    return CoralStates.values();
+    return CoralIntakeStates.values();
   }
 
   @Override
@@ -119,14 +119,14 @@ public Enum<?> getDesiredState() {
     SmartDashboard.putString("CoralIntakeState", getCurrentState().toString());
   }
 
-  public enum CoralStates {
+  public enum CoralIntakeStates {
     ROLLER_INTAKE(ROLLER_INTAKE_VOLTAGE),
     ROLLER_OUTTAKE(ROLLER_OUTTAKE_VOLTAGE),
     ROLLER_LVL1(ROLLER_LVL1_VOLTAGE); // New state for LVL1
 
     private final double setpointValue;
 
-    CoralStates(double setpointValue) {
+    CoralIntakeStates(double setpointValue) {
       this.setpointValue = setpointValue;
     }
 

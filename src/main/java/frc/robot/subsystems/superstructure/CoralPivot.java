@@ -95,11 +95,11 @@ public class CoralPivot extends FSMSubsystem {
     )
   );
     
-  public Command elevatorSysIDQuasistatic(SysIdRoutine.Direction direction) {
+  public Command coralPivotSysIDQuasistatic(SysIdRoutine.Direction direction) {
     return coralPivotCharacterization.quasistatic(direction);
   }
 
-  public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
+  public Command coralPivotSysIDDynamic(SysIdRoutine.Direction direction) {
     return coralPivotCharacterization.dynamic(direction);
   }
 
@@ -116,12 +116,12 @@ public class CoralPivot extends FSMSubsystem {
 
   @Override
   protected void exitCurrentState() {
-    //nothing
+    // No specific exit actions needed
   }
 
   @Override
   protected void executeCurrentStateBehavior() {
-    //nothing
+    setGoal(getCurrentState());
   }
 
   @Override

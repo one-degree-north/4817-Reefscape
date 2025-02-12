@@ -38,7 +38,7 @@ public abstract class FSMSubsystem extends SubsystemBase {
     }
 
     // Method to set the desired state with a condition
-    public void setDesiredStateWithCondition(Enum<?> newState, BooleanSupplier condition) {
+    public void setGoalWithCondition(Enum<?> newState, BooleanSupplier condition) {
         this.desiredState = newState;
         this.waitingForCondition = true;
         this.transitionCondition = condition;
@@ -46,7 +46,7 @@ public abstract class FSMSubsystem extends SubsystemBase {
 
 
     // Method to set the desired state
-    public void setDesiredState(Enum<?> newState) {
+    public void setGoal(Enum<?> newState) {
         this.desiredState = newState;
         this.waitingForCondition = false;
         this.transitionCondition = null;

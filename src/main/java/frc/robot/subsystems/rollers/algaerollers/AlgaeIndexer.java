@@ -60,7 +60,7 @@ public class AlgaeIndexer extends FSMSubsystem {
     protected void executeCurrentStateBehavior() {
         if (isBeamBreakActivated() && getCurrentState() == AlgaeIndexerStates.INTAKING) {
             stop();
-            setDesiredState(AlgaeIndexerStates.INTAKED);
+            setGoal(AlgaeIndexerStates.INTAKED);
         }
     }
 

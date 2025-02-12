@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems.superstructure;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.utils.FSMSubsystem;
 
 public class Superstructure extends FSMSubsystem {
@@ -26,93 +29,92 @@ public class Superstructure extends FSMSubsystem {
         switch (newState) {
             case ALGAE_EXTENDED:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.INTAKING);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.DOCKED);
                 s_elevator
-                    .setDesiredState(
-                        Elevator.ElevatorStates.DOCKED);
-                break;
-            case ALGAE_DOCKED:
-                s_algaePivot
-                    .setDesiredState(
-                        AlgaePivot.AlgaeStates.DOCKED);
-                s_coralPivot
-                    .setDesiredState(
-                        CoralPivot.CoralPivotStates.DOCKED);
-                s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.DOCKED);
                 break;
             case CORAL_LVL1:
                 s_algaePivot
-            .       setDesiredState(
+            .       setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.L1);
                 break;
             case CORAL_LVL2:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.L2);
                 break;
             case CORAL_LVL3:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.L3);
                 break;
             case CORAL_HP:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.HUMAN_PLAYER);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.HUMAN_PLAYER);
                 break;
             case CORAL_LVL4:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.L4);
                 break;
             case STOWED:
                 s_algaePivot
-                    .setDesiredState(
+                    .setGoal(
                         AlgaePivot.AlgaeStates.DOCKED);
                 s_coralPivot
-                    .setDesiredState(
+                    .setGoal(
                         CoralPivot.CoralPivotStates.DOCKED);
                 s_elevator
-                    .setDesiredState(
+                    .setGoal(
                         Elevator.ElevatorStates.DOCKED);
                 break;
+            default:
+                break;
         }
+    }
+
+    public Command setGoalCommand(SuperstructureStates goal) {
+        return startEnd(()-> setGoal(goal), ()-> setGoal(SuperstructureStates.STOWED));
+    }
+
+    public Command setConditionalGoalCommand(Supplier<SuperstructureStates> goal) {
+        return setGoalCommand(goal.get());
     }
 
     @Override
@@ -122,10 +124,7 @@ public class Superstructure extends FSMSubsystem {
 
     @Override
     protected void executeCurrentStateBehavior() {
-        // Check if all subsystems have reached their desired states
-        if (s_algaePivot.atGoal() && s_coralPivot.atGoal() && s_elevator.atGoal()) {
-            setDesiredState(getCurrentState()); // Transition to the current state
-        }
+        setGoal(getCurrentState());
     }
 
     @Override
