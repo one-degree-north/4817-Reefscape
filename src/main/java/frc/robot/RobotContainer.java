@@ -12,8 +12,11 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -59,6 +62,8 @@ public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
+  private final SendableChooser<Command> autoChooser;
+
   private SuperstructureStates elevatorState = SuperstructureStates.STOWED;
   private Supplier<SuperstructureStates> elevatorStateSupplier = () -> elevatorState;
   //These two are used to set the elevator state based on the operator input
@@ -69,6 +74,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
+    visionCommand.schedule();
+    registerInitialStates();
+    driverBindings();
+    operatorBindings();
+  }
+
+  private void registerInitialStates(){
     s_Elevator.registerStates(ElevatorStates.DOCKED);
     s_AlgaeIntake.registerStates(AlgaeIntakeStates.IDLE);
     s_CoralIntake.registerStates(CoralIntakeStates.ROLLER_IDLE);
@@ -76,9 +89,6 @@ public class RobotContainer {
     s_Superstructure.registerStates(SuperstructureStates.STOWED);
     s_CoralPivot.registerStates(CoralPivotStates.DOCKED);
     s_AlgaePivot.registerStates(AlgaePivotStates.DOCKED);
-    visionCommand.schedule();
-    driverBindings();
-    operatorBindings();
   }
 
   private void driverBindings() {
@@ -104,23 +114,27 @@ public class RobotContainer {
 
   private void operatorBindings(){
     // Bind operator buttons to change the elevatorState variable
-    operator.circle().onTrue(Commands.runOnce(() -> {
-      elevatorState = SuperstructureStates.CORAL_LVL1; // Set to Level 1
+    operator.circle().onTrue(
+      Commands.runOnce(() -> {
+        elevatorState = SuperstructureStates.CORAL_LVL1; // Set to Level 1
     }));
 
-    operator.cross().onTrue(Commands.runOnce(() -> {
-      elevatorState = SuperstructureStates.CORAL_LVL2; // Set to Level 2
+    operator.cross().onTrue(
+      Commands.runOnce(() -> {
+        elevatorState = SuperstructureStates.CORAL_LVL2; // Set to Level 2
     }));
 
-    operator.triangle().onTrue(Commands.runOnce(() -> {
-      elevatorState = SuperstructureStates.CORAL_LVL3; // Set to Level 3
+    operator.triangle().onTrue(
+      Commands.runOnce(() -> {
+        elevatorState = SuperstructureStates.CORAL_LVL3; // Set to Level 3
     }));
 
-    operator.square().onTrue(Commands.runOnce(() -> {
-      elevatorState = SuperstructureStates.CORAL_LVL4; // Set to Level 4
+    operator.square().onTrue(
+      Commands.runOnce(() -> {
+        elevatorState = SuperstructureStates.CORAL_LVL4; // Set to Level 4
     }));
   }
   public Command getAutonomousCommand() {
-      return null;
+      return autoChooser.getSelected();
   }
 }
