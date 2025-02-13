@@ -122,6 +122,7 @@ public Enum<?> getDesiredState() {
   public enum CoralIntakeStates {
     ROLLER_INTAKE(ROLLER_INTAKE_VOLTAGE),
     ROLLER_OUTTAKE(ROLLER_OUTTAKE_VOLTAGE),
+    ROLLER_IDLE(0),
     ROLLER_LVL1(ROLLER_LVL1_VOLTAGE); // New state for LVL1
 
     private final double setpointValue;

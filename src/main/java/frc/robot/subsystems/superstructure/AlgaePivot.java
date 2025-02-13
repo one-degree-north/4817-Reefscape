@@ -66,7 +66,7 @@ private void configureMotor() {
 
 @Override
 protected void enterNewState() {
-    AlgaeStates newState = (AlgaeStates)getCurrentState();
+    AlgaePivotStates newState = (AlgaePivotStates)getCurrentState();
     setMotorPosition(newState.getSetpointValue());
 }
 
@@ -87,7 +87,7 @@ private void setMotorPosition(double position) {
 }
 
 public boolean atGoal() {
-    AlgaeStates desiredState = (AlgaeStates) getDesiredState();
+    AlgaePivotStates desiredState = (AlgaePivotStates) getDesiredState();
     double currentPosition = m_algaePivot.getPosition().getValueAsDouble();
     double targetPosition = desiredState.getSetpointValue();
     
@@ -137,7 +137,7 @@ public Enum<?> getCurrentState() {
 
 @Override
 protected Enum<?>[] getStates() {
-    return AlgaeStates.values();
+    return AlgaePivotStates.values();
 }
 
 @Override
@@ -153,13 +153,13 @@ public void periodic() {
     SmartDashboard.putString("AlgaeIntakeNeutralMode", currentNeutralMode.toString());
 }
 
-public enum AlgaeStates {
+public enum AlgaePivotStates {
     DOCKED(DOCKED_POSITION),
     INTAKING(INTAKING_POSITION);
 
     private final double setpointValue;
 
-    AlgaeStates(double setpointValue) {
+    AlgaePivotStates(double setpointValue) {
         this.setpointValue = setpointValue;
     }
 

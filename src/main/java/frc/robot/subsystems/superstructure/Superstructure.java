@@ -30,7 +30,7 @@ public class Superstructure extends FSMSubsystem {
             case ALGAE_EXTENDED:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.INTAKING);
+                        AlgaePivot.AlgaePivotStates.INTAKING);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.DOCKED);
@@ -41,7 +41,7 @@ public class Superstructure extends FSMSubsystem {
             case CORAL_LVL1:
                 s_algaePivot
             .       setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
@@ -52,7 +52,7 @@ public class Superstructure extends FSMSubsystem {
             case CORAL_LVL2:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
@@ -63,7 +63,7 @@ public class Superstructure extends FSMSubsystem {
             case CORAL_LVL3:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
@@ -74,7 +74,7 @@ public class Superstructure extends FSMSubsystem {
             case CORAL_HP:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.HUMAN_PLAYER);
@@ -85,7 +85,7 @@ public class Superstructure extends FSMSubsystem {
             case CORAL_LVL4:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.REEF);
@@ -96,7 +96,7 @@ public class Superstructure extends FSMSubsystem {
             case STOWED:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaeStates.DOCKED);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.DOCKED);

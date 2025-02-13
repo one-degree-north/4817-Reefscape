@@ -4,16 +4,16 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -23,10 +23,15 @@ import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.subsystems.rollers.CoralIntake;
 import frc.robot.subsystems.rollers.CoralIntake.CoralIntakeStates;
 import frc.robot.subsystems.rollers.algaerollers.AlgaeIndexer;
+import frc.robot.subsystems.rollers.algaerollers.AlgaeIndexer.AlgaeIndexerStates;
 import frc.robot.subsystems.rollers.algaerollers.AlgaeIntake;
+import frc.robot.subsystems.rollers.algaerollers.AlgaeIntake.AlgaeIntakeStates;
 import frc.robot.subsystems.superstructure.AlgaePivot;
+import frc.robot.subsystems.superstructure.AlgaePivot.AlgaePivotStates;
 import frc.robot.subsystems.superstructure.CoralPivot;
+import frc.robot.subsystems.superstructure.CoralPivot.CoralPivotStates;
 import frc.robot.subsystems.superstructure.Elevator;
+import frc.robot.subsystems.superstructure.Elevator.ElevatorStates;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 
@@ -58,17 +63,25 @@ public class RobotContainer {
   private Supplier<SuperstructureStates> elevatorStateSupplier = () -> elevatorState;
   //These two are used to set the elevator state based on the operator input
 
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+          .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    s_Elevator.registerStates(ElevatorStates.DOCKED);
+    s_AlgaeIntake.registerStates(AlgaeIntakeStates.IDLE);
+    s_CoralIntake.registerStates(CoralIntakeStates.ROLLER_IDLE);
+    s_AlgaeIndexer.registerStates(AlgaeIndexerStates.INTAKED);
+    s_Superstructure.registerStates(SuperstructureStates.STOWED);
+    s_CoralPivot.registerStates(CoralPivotStates.DOCKED);
+    s_AlgaePivot.registerStates(AlgaePivotStates.DOCKED);
     visionCommand.schedule();
-    configureBindings();
+    driverBindings();
+    operatorBindings();
   }
 
-  private void configureBindings() {
+  private void driverBindings() {
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-driver.getLeftY() * MaxSpeed)
@@ -87,6 +100,25 @@ public class RobotContainer {
       )
     );
     //ALGAE: docked (both rollers not spining), intaking (both rollers spinning), ramping (pivot extended, end effector rolling), shoot(all motors spinning, pivot fully out), processor(pivot pulled back, stationary roller spinning)
+  }
+
+  private void operatorBindings(){
+    // Bind operator buttons to change the elevatorState variable
+    operator.circle().onTrue(Commands.runOnce(() -> {
+      elevatorState = SuperstructureStates.CORAL_LVL1; // Set to Level 1
+    }));
+
+    operator.cross().onTrue(Commands.runOnce(() -> {
+      elevatorState = SuperstructureStates.CORAL_LVL2; // Set to Level 2
+    }));
+
+    operator.triangle().onTrue(Commands.runOnce(() -> {
+      elevatorState = SuperstructureStates.CORAL_LVL3; // Set to Level 3
+    }));
+
+    operator.square().onTrue(Commands.runOnce(() -> {
+      elevatorState = SuperstructureStates.CORAL_LVL4; // Set to Level 4
+    }));
   }
   public Command getAutonomousCommand() {
       return null;

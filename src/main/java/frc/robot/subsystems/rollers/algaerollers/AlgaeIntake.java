@@ -65,7 +65,7 @@ public class AlgaeIntake extends FSMSubsystem {
 
     @Override
     protected void enterNewState() {
-        IntakeStates newState = (IntakeStates) getCurrentState();
+        AlgaeIntakeStates newState = (AlgaeIntakeStates) getCurrentState();
         switch (newState) {
             case INTAKE:
                 setVoltage(INTAKE_VOLTAGE);
@@ -104,9 +104,9 @@ public class AlgaeIntake extends FSMSubsystem {
 
     public boolean isAtTargetRPM() {
         double currentRPM = getCurrentRPM();
-        IntakeStates desiredState = (IntakeStates) getDesiredState();
+        AlgaeIntakeStates desiredState = (AlgaeIntakeStates) getDesiredState();
         
-        if (desiredState == IntakeStates.SHOOT) {
+        if (desiredState == AlgaeIntakeStates.SHOOT) {
             return Math.abs(currentRPM - SHOOT_RPM) <= RPM_TOLERANCE;
         }
         
@@ -142,7 +142,7 @@ public class AlgaeIntake extends FSMSubsystem {
 
     @Override
     protected Enum<?>[] getStates() {
-        return IntakeStates.values();
+        return AlgaeIntakeStates.values();
     }
 
     @Override
@@ -154,9 +154,10 @@ public class AlgaeIntake extends FSMSubsystem {
         SmartDashboard.putBoolean("IntakeAtTargetRPM", isAtTargetRPM());
     }
 
-    public enum IntakeStates {
+    public enum AlgaeIntakeStates {
         INTAKE,
         OUTTAKE,
+        IDLE,
         SHOOT;
 
         public boolean usesVoltageControl() {
