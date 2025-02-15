@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.utils.FSMSubsystem;
 
 public class Superstructure extends FSMSubsystem {
@@ -109,12 +110,20 @@ public class Superstructure extends FSMSubsystem {
         }
     }
 
-    public Command setGoalCommand(SuperstructureStates goal) {
+    private Command setGoalCommand(SuperstructureStates goal) {
         return startEnd(()-> setGoal(goal), ()-> setGoal(SuperstructureStates.STOWED));
     }
 
     public Command setConditionalGoalCommand(Supplier<SuperstructureStates> goal) {
         return setGoalCommand(goal.get());
+    }
+
+    public Command zeroSuperstructure(){
+        return Commands.parallel(
+            Commands.runOnce(()-> s_algaePivot.zeroAndToggleIdleMode(), s_algaePivot),
+            Commands.runOnce(()-> s_coralPivot.zeroAndToggleIdleMode(), s_coralPivot),
+            Commands.runOnce(()-> s_elevator.zeroAndToggleIdleMode(), s_elevator)
+        );
     }
 
     @Override

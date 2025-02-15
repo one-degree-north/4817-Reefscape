@@ -8,18 +8,19 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import choreo.auto.AutoChooser;
-import choreo.auto.AutoFactory;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
@@ -59,8 +60,14 @@ public class RobotContainer {
   private final AlgaeIntake s_AlgaeIntake = new AlgaeIntake(false);
   private final CoralIntake s_CoralIntake = new CoralIntake();
 
+  private final DigitalInput zeroSwitch = new DigitalInput(0);
+  private final BooleanSupplier zeroSwitchSupplier = () -> zeroSwitch.get();
+
+  private final Trigger zeroSwitchTrigger = new Trigger(zeroSwitchSupplier);
+
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+  private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private final SendableChooser<Command> autoChooser;
 
@@ -70,6 +77,10 @@ public class RobotContainer {
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -82,16 +93,21 @@ public class RobotContainer {
   }
 
   private void registerInitialStates(){
-    s_Elevator.registerStates(ElevatorStates.DOCKED);
-    s_AlgaeIntake.registerStates(AlgaeIntakeStates.IDLE);
-    s_CoralIntake.registerStates(CoralIntakeStates.ROLLER_IDLE);
-    s_AlgaeIndexer.registerStates(AlgaeIndexerStates.INTAKED);
-    s_Superstructure.registerStates(SuperstructureStates.STOWED);
-    s_CoralPivot.registerStates(CoralPivotStates.DOCKED);
-    s_AlgaePivot.registerStates(AlgaePivotStates.DOCKED);
+    s_Elevator.registerState(ElevatorStates.DOCKED);
+    s_AlgaeIntake.registerState(AlgaeIntakeStates.IDLE);
+    s_CoralIntake.registerState(CoralIntakeStates.ROLLER_IDLE);
+    s_AlgaeIndexer.registerState(AlgaeIndexerStates.INTAKED);
+    s_Superstructure.registerState(SuperstructureStates.STOWED);
+    s_CoralPivot.registerState(CoralPivotStates.DOCKED);
+    s_AlgaePivot.registerState(AlgaePivotStates.DOCKED);
   }
 
   private void driverBindings() {
+    //ZeroSwitch Binding
+    zeroSwitchTrigger.onTrue(
+      s_Superstructure.zeroSuperstructure()
+    );
+
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-driver.getLeftY() * MaxSpeed)

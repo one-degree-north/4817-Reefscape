@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.utils.FSMSubsystem;
 
 public class LEDs extends FSMSubsystem {
@@ -40,8 +41,11 @@ public class LEDs extends FSMSubsystem {
     protected void executeCurrentStateBehavior() {
         LEDStates currentState = (LEDStates) getCurrentState();
         switch (currentState) {
-            case IDLE:
-                setIdlePattern();
+            case NOTZEROED:
+                setRed();
+                break;
+            case ZEROED:
+                setGreen();
                 break;
             case INTAKED_CORAL:
                 setCoralPattern();
@@ -57,10 +61,22 @@ public class LEDs extends FSMSubsystem {
         animationStep = (animationStep + 1) % 180;
     }
 
-    private void setIdlePattern() {
+    private void setAllianceColor() {
         Color allianceColor = (alliance == Alliance.Red) ? Color.kRed : Color.kBlue;
         for (int i = 0; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setLED(i, allianceColor);
+        }
+    }
+
+    private void setGreen() {
+        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setLED(i, Color.kGreen);
+        }
+    }
+
+    private void setRed(){
+        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setLED(i, Color.kRed);
         }
     }
 
@@ -132,7 +148,8 @@ public class LEDs extends FSMSubsystem {
     }
 
     public enum LEDStates {
-        IDLE, INTAKED_CORAL, INTAKED_ALGAE, INTAKED_BOTH
+        NOTZEROED, ZEROED, INTAKED_CORAL,
+        INTAKED_ALGAE, INTAKED_BOTH
     }
 }
 

@@ -25,6 +25,8 @@ public class AlgaePivot extends FSMSubsystem {
 private static final int ALGAE_PIVOT_ID = 20; // Replace with actual ID
 private static final double DOCKED_POSITION = 0.0; // Replace with actual docked position
 private static final double INTAKING_POSITION = 10.0; // Replace with actual extended position
+private static final double SCORING_POSITION = 20.0; // Replace with actual scoring position
+private static final double REMOVING_POSITION = 30.0; // Replace with actual removing position
 private static final double kP = 0.1;
 private static final double kI = 0.0;
 private static final double kD = 0.0;
@@ -94,11 +96,20 @@ public boolean atGoal() {
     return Math.abs(currentPosition - targetPosition) <= POSITION_TOLERANCE;
 }
 
+private void resetAlgaePivotPosition() {
+    m_algaePivot.setPosition(0);
+}
+
 private void toggleIdleMode(){
     currentNeutralMode = (currentNeutralMode == NeutralModeValue.Brake) 
         ? NeutralModeValue.Coast 
         : NeutralModeValue.Brake;
     configureMotor();
+}
+
+public void zeroAndToggleIdleMode() {
+    resetAlgaePivotPosition();
+    toggleIdleMode();
 }
 
 private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
@@ -155,7 +166,9 @@ public void periodic() {
 
 public enum AlgaePivotStates {
     DOCKED(DOCKED_POSITION),
-    INTAKING(INTAKING_POSITION);
+    INTAKING(INTAKING_POSITION),
+    SCORING(SCORING_POSITION),
+    REMOVING(REMOVING_POSITION);
 
     private final double setpointValue;
 

@@ -15,7 +15,7 @@ public abstract class FSMSubsystem extends SubsystemBase {
     private boolean waitingForCondition = false;
     private BooleanSupplier transitionCondition = null;
 
-    public void registerStates(Enum<?> initialState) {
+    public void registerState(Enum<?> initialState) {
         if (!statesRegistered) {
             this.currentState = initialState;
             this.desiredState = initialState;

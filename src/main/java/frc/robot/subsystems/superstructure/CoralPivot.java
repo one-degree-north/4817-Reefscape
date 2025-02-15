@@ -72,7 +72,7 @@ public class CoralPivot extends FSMSubsystem {
       }
   }
 
-  public void resetCoralPivotPosition() {
+  private void resetCoralPivotPosition() {
     m_coralPivotMotor.setPosition(0);
   }
 
@@ -82,6 +82,11 @@ public class CoralPivot extends FSMSubsystem {
         : NeutralModeValue.Brake;
     motorConfigurations();
     SmartDashboard.putString("Coral Pivot Idle Mode", m_currentNeutralMode.toString());
+  }
+
+  public void zeroAndToggleIdleMode() {
+    resetCoralPivotPosition();
+    toggleIdleMode();
   }
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(

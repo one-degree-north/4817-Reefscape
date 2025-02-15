@@ -99,16 +99,21 @@ public class Elevator extends FSMSubsystem {
         }
     }
 
-    public void resetElevatorPosition() {
+    private void resetElevatorPosition() {
         m_elevatorMasterMotor.setPosition(0);
         m_elevatorSlaveMotor.setPosition(0);
     }
 
-    public void toggleIdleMode() {
+    private void toggleIdleMode() {
         m_currentNeutralMode = (m_currentNeutralMode == NeutralModeValue.Brake) 
             ? NeutralModeValue.Coast 
             : NeutralModeValue.Brake;
         motorConfigurations();
+    }
+
+    public void zeroAndToggleIdleMode() {
+        resetElevatorPosition();
+        toggleIdleMode();
     }
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
