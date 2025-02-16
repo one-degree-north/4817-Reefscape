@@ -105,12 +105,34 @@ public class Superstructure extends FSMSubsystem {
                     .setGoal(
                         Elevator.ElevatorStates.DOCKED);
                 break;
+            case ALGAE_REMOVE_LVL2:
+                s_algaePivot
+                    .setGoal(
+                        AlgaePivot.AlgaePivotStates.REMOVING);
+                s_coralPivot
+                    .setGoal(
+                        CoralPivot.CoralPivotStates.DOCKED);
+                s_elevator
+                    .setGoal(
+                        Elevator.ElevatorStates.L2);
+                break;
+            case ALGAE_REMOVE_LVL3:
+                s_algaePivot
+                    .setGoal(
+                        AlgaePivot.AlgaePivotStates.REMOVING);
+                s_coralPivot
+                    .setGoal(
+                        CoralPivot.CoralPivotStates.DOCKED);
+                s_elevator
+                    .setGoal(
+                        Elevator.ElevatorStates.L3);
+                break;
             default:
                 break;
         }
     }
 
-    private Command setGoalCommand(SuperstructureStates goal) {
+    public Command setGoalCommand(SuperstructureStates goal) {
         return startEnd(()-> setGoal(goal), ()-> setGoal(SuperstructureStates.STOWED));
     }
 
@@ -172,6 +194,7 @@ public class Superstructure extends FSMSubsystem {
     public enum SuperstructureStates {
         ALGAE_EXTENDED, ALGAE_DOCKED,
         CORAL_LVL1, CORAL_LVL2, CORAL_LVL3,
-        CORAL_HP, CORAL_LVL4, STOWED
+        CORAL_HP, CORAL_LVL4, ALGAE_REMOVE_LVL2, 
+        ALGAE_REMOVE_LVL3, STOWED
     }
 }
