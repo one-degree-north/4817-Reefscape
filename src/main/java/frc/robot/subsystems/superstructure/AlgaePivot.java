@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -42,6 +43,7 @@ private static final double POSITION_TOLERANCE = 0.1;
 
 private TalonFX m_algaePivot;
 private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+private VoltageOut voltageOut = new VoltageOut(0);
 private NeutralModeValue currentNeutralMode = NeutralModeValue.Brake;
 
 public static boolean isAlgaeIntaked = false;
@@ -116,7 +118,7 @@ private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
     new SysIdRoutine.Config(null, Voltage.ofBaseUnits(2, Volts), null),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
-        m_algaePivot.setVoltage(volts.in(Volt));
+        m_algaePivot.setControl(voltageOut.withOutput(volts));
         },
         null,
         this

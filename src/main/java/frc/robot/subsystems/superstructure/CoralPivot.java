@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Volt;
 
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -43,6 +44,7 @@ public class CoralPivot extends FSMSubsystem {
   private TalonFX m_coralPivotMotor;
 
   private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+  private VoltageOut voltageOut = new VoltageOut(0);
     
   private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
 
@@ -90,10 +92,10 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(0.5, Volt), null),
+    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(0.2, Volt), null),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
-          m_coralPivotMotor.setVoltage(volts.in(Volt));
+          m_coralPivotMotor.setControl(voltageOut.withOutput(volts));
         },
         null,
         this

@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -77,6 +78,9 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
+  private RobotMode currentMode = RobotMode.DRIVING;
+  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.SWERVE;
+
   private final SendableChooser<Command> autoChooser;
 
   private SuperstructureStates elevatorState = SuperstructureStates.STOWED;
@@ -102,6 +106,10 @@ public class RobotContainer {
     registerInitialStates();
     driverBindings();
     operatorBindings();
+    
+    driver.touchpad().onTrue(
+      Commands.runOnce(() -> toggleRobotMode())
+    );
   }
 
   private void registerInitialStates(){
@@ -113,6 +121,15 @@ public class RobotContainer {
     s_Superstructure.registerState(SuperstructureStates.STOWED);
     s_CoralPivot.registerState(CoralPivotStates.DOCKED);
     s_AlgaePivot.registerState(AlgaePivotStates.DOCKED);
+  }
+
+  private void toggleRobotMode(){
+    currentMode = (currentMode == RobotMode.DRIVING) ? RobotMode.TUNING : RobotMode.DRIVING;
+    if (currentMode == RobotMode.TUNING) {
+      tuningBindings();
+    } else {
+      driverBindings();
+    }
   }
 
   private void driverBindings() {
@@ -210,7 +227,71 @@ public class RobotContainer {
         elevatorState = SuperstructureStates.CORAL_LVL4; // Set to Level 4
     }));
   }
+
+  private void tuningBindings() {
+    switch (currentTuningSubsystem) {
+      case SWERVE: //SWITCH BETWEEN TRANSLATION, ROTATION, and STEER inside CommandSwerveDrivetrain
+        driver.triangle().whileTrue(
+          drivetrain.sysIdDynamic(Direction.kForward));
+        driver.circle().whileTrue(
+          drivetrain.sysIdDynamic(Direction.kReverse));
+        driver.square().whileTrue(
+          drivetrain.sysIdQuasistatic(Direction.kForward));
+        driver.cross().whileTrue(
+          drivetrain.sysIdQuasistatic(Direction.kReverse));
+        break;
+      case ELEVATOR:
+        driver.triangle().whileTrue(
+          s_Elevator.elevatorSysIDDynamic(Direction.kForward));
+        driver.circle().whileTrue(
+          s_Elevator.elevatorSysIDDynamic(Direction.kReverse));
+        driver.square().whileTrue(
+          s_Elevator.elevatorSysIDQuasistatic(Direction.kForward));
+        driver.cross().whileTrue(
+          s_Elevator.elevatorSysIDQuasistatic(Direction.kReverse));
+        break;
+      case CORALPIVOT:
+        driver.triangle().whileTrue(
+          s_CoralPivot.coralPivotSysIDDynamic(Direction.kForward));
+        driver.circle().whileTrue(
+          s_CoralPivot.coralPivotSysIDDynamic(Direction.kReverse));
+        driver.square().whileTrue(
+          s_CoralPivot.coralPivotSysIDQuasistatic(Direction.kForward));
+        driver.cross().whileTrue(
+          s_CoralPivot.coralPivotSysIDQuasistatic(Direction.kReverse));
+        break;
+      case ALGAEPIVOT:
+        driver.triangle().whileTrue(
+          s_AlgaePivot.algaePivotSysIDDynamic(Direction.kForward));
+        driver.circle().whileTrue(
+          s_AlgaePivot.algaePivotSysIDDynamic(Direction.kReverse));
+        driver.square().whileTrue(
+          s_AlgaePivot.algaePivotSysIDQuasistatic(Direction.kForward));
+        driver.cross().whileTrue(
+          s_AlgaePivot.algaePivotSysIDQuasistatic(Direction.kReverse));
+        break;
+      case ALGAEINTAKE:
+        driver.triangle().whileTrue(
+          s_AlgaeIntake.elevatorSysIDDynamic(Direction.kForward));
+        driver.circle().whileTrue(
+          s_AlgaeIntake.elevatorSysIDDynamic(Direction.kReverse));
+        driver.square().whileTrue(
+          s_AlgaeIntake.elevatorSysIDQuasistatic(Direction.kForward));
+        driver.cross().whileTrue(
+          s_AlgaeIntake.elevatorSysIDQuasistatic(Direction.kReverse));
+        break;
+    }
+  }
+
   public Command getAutonomousCommand() {
       return autoChooser.getSelected();
+  }
+
+  private enum RobotMode {
+    DRIVING, TUNING
+  }
+
+  private enum TuningSubsystem {
+    SWERVE, ELEVATOR, CORALPIVOT, ALGAEPIVOT, ALGAEINTAKE
   }
 }

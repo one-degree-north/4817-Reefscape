@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.rollers.algaerollers;
 
+import static edu.wpi.first.units.Units.Volt;
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -12,7 +14,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -115,6 +120,25 @@ public class AlgaeIntake extends FSMSubsystem {
 
     public double getCurrentRPM() {
         return m_algaeIntakeMaster.getVelocity().getValueAsDouble() * 60;
+    }
+
+    private final SysIdRoutine algaeIntakeCharacterization = new SysIdRoutine(
+        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null),
+        new SysIdRoutine.Mechanism(
+            (Voltage volts) -> {
+                m_algaeIntakeMaster.setControl(voltageOut.withOutput(volts));
+            },
+            null,
+            this
+        )
+    );
+
+    public Command elevatorSysIDQuasistatic(SysIdRoutine.Direction direction) {
+        return algaeIntakeCharacterization.quasistatic(direction);
+    }
+
+    public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
+        return algaeIntakeCharacterization.dynamic(direction);
     }
 
     @Override
