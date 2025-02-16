@@ -12,6 +12,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.rollers.CoralIntake.CoralIntakeStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -60,7 +62,7 @@ public class AlgaeIndexer extends FSMSubsystem {
     protected void executeCurrentStateBehavior() {
         if (isBeamBreakActivated() && getCurrentState() == AlgaeIndexerStates.INTAKING) {
             stop();
-            setGoal(AlgaeIndexerStates.INTAKED);
+            setGoal(AlgaeIndexerStates.IDLE);
         }
     }
 
@@ -72,6 +74,10 @@ public class AlgaeIndexer extends FSMSubsystem {
 
     public boolean isBeamBreakActivated() {
         return m_beamBreak.get();
+    }
+
+    public Command setGoalCommand(AlgaeIndexerStates goal) {
+        return startEnd(()-> setGoal(goal), ()-> setGoal(AlgaeIndexerStates.INTAKING));
     }
 
     @Override
@@ -108,7 +114,7 @@ public class AlgaeIndexer extends FSMSubsystem {
 
     public enum AlgaeIndexerStates {
         INTAKING(INTAKE_VOLTAGE),
-        INTAKED(0),
+        IDLE(0),
         OUTTAKING(OUTTAKE_VOLTAGE);
 
         private final double setpointValue;

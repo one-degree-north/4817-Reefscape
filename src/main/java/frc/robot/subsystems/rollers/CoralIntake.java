@@ -1,13 +1,16 @@
 package frc.robot.subsystems.rollers;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -111,6 +114,10 @@ public Enum<?> getDesiredState() {
   @Override
   protected Enum<?>[] getStates() {
     return CoralIntakeStates.values();
+  }
+
+  public Command setGoalCommand(CoralIntakeStates goal) {
+        return startEnd(()-> setGoal(goal), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
   }
 
   @Override

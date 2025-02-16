@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -68,9 +67,6 @@ public class RobotContainer {
 
   private final DigitalInput zeroSwitch = new DigitalInput(0);
 
-  private final BooleanSupplier zeroSwitchSupplier = () -> zeroSwitch.get();
-  private final BooleanSupplier autonSupplier = () -> DriverStation.isAutonomousEnabled();
-
   private final Trigger zeroSwitchTrigger;
   private final Trigger autonTrigger;
 
@@ -99,17 +95,20 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    zeroSwitchTrigger = new Trigger(zeroSwitchSupplier);
-    autonTrigger = new Trigger(autonSupplier);
+    zeroSwitchTrigger = new Trigger(() -> zeroSwitch.get());
+    autonTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
     visionCommand.schedule();
     registerInitialStates();
-    driverBindings();
+    switch(currentMode){
+      case DRIVING:
+        driverBindings();
+        break;
+      case TUNING:
+        tuningBindings();
+        break;
+    }
     operatorBindings();
-    
-    driver.touchpad().onTrue(
-      Commands.runOnce(() -> toggleRobotMode())
-    );
   }
 
   private void registerInitialStates(){
@@ -117,27 +116,18 @@ public class RobotContainer {
     s_Elevator.registerState(ElevatorStates.DOCKED);
     s_AlgaeIntake.registerState(AlgaeIntakeStates.IDLE);
     s_CoralIntake.registerState(CoralIntakeStates.ROLLER_IDLE);
-    s_AlgaeIndexer.registerState(AlgaeIndexerStates.INTAKED);
+    s_AlgaeIndexer.registerState(AlgaeIndexerStates.IDLE);
     s_Superstructure.registerState(SuperstructureStates.STOWED);
     s_CoralPivot.registerState(CoralPivotStates.DOCKED);
     s_AlgaePivot.registerState(AlgaePivotStates.DOCKED);
-  }
-
-  private void toggleRobotMode(){
-    currentMode = (currentMode == RobotMode.DRIVING) ? RobotMode.TUNING : RobotMode.DRIVING;
-    if (currentMode == RobotMode.TUNING) {
-      tuningBindings();
-    } else {
-      driverBindings();
-    }
   }
 
   private void driverBindings() {
     //ZeroSwitch Binding
     zeroSwitchTrigger.onTrue(
       Commands.parallel(
-        Commands.runOnce(() -> s_Superstructure.zeroSuperstructure(), s_Superstructure),
-        Commands.runOnce(() -> s_Leds.setGoal(LEDStates.ZEROED), s_Leds)
+        Commands.runOnce(() -> s_Superstructure.zeroSuperstructure()),
+        Commands.runOnce(() -> s_Leds.setGoal(LEDStates.ZEROED))
       )
     );
 
@@ -158,8 +148,8 @@ public class RobotContainer {
       Commands.deadline(
         s_Superstructure.setConditionalGoalCommand(elevatorStateSupplier), 
         Commands.sequence( 
-          Commands.waitUntil(()-> driver.getR2Axis()<0.9),
-          Commands.run(()-> s_CoralIntake.setGoal(CoralIntakeStates.ROLLER_OUTTAKE), s_CoralIntake)
+          Commands.waitUntil(()-> driver.getR2Axis() > 0.9),
+          s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
         )
       )
     );
@@ -167,12 +157,12 @@ public class RobotContainer {
     //ALGAE SHOOT
     driver.L2().whileTrue(
       Commands.sequence(
-        Commands.parallel(
+        Commands.deadline(
           s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
-          Commands.runOnce(()-> s_AlgaeIntake.setGoal(AlgaeIntakeStates.SHOOT), s_AlgaeIntake),
-          Commands.runOnce(()-> s_AlgaeIndexer.setGoal(AlgaeIndexerStates.INTAKED), s_AlgaeIndexer)),
-        Commands.waitUntil(() -> driver.getL2Axis() < 0.9),
-        Commands.run(()-> s_AlgaeIndexer.setGoal(AlgaeIntakeStates.OUTTAKE), s_AlgaeIndexer)
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.IDLE)),
+        Commands.waitUntil(() -> driver.getL2Axis() > 0.9),
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.OUTTAKE)
       )
     );
 
@@ -180,7 +170,7 @@ public class RobotContainer {
     driver.R1().whileTrue(
       Commands.parallel(
         s_Superstructure.setConditionalGoalCommand(algaeRemovalStateSupplier),
-        Commands.run(()-> s_CoralIntake.setGoal(CoralIntakeStates.ROLLER_INTAKE), s_CoralIntake)
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
       )
     );
 
@@ -188,7 +178,7 @@ public class RobotContainer {
     driver.triangle().whileTrue(
       Commands.parallel(
         s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
-        Commands.run(()-> s_CoralIntake.setGoal(CoralIntakeStates.ROLLER_INTAKE), s_CoralIntake)
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
       )
     );
 
@@ -196,8 +186,8 @@ public class RobotContainer {
     driver.circle().whileTrue(
       Commands.parallel(
         s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
-        Commands.run(()-> s_AlgaeIntake.setGoal(AlgaeIntakeStates.INTAKE), s_AlgaeIntake),
-        Commands.run(()-> s_AlgaeIndexer.setGoal(AlgaeIndexerStates.INTAKING), s_AlgaeIndexer)
+        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
       )
     );
     //ALGAE: docked (both rollers not spining), intaking (both rollers spinning), ramping (pivot extended, end effector rolling), shoot(all motors spinning, pivot fully out), processor(pivot pulled back, stationary roller spinning)

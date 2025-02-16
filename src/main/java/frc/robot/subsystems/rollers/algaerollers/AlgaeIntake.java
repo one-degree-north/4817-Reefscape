@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.subsystems.rollers.CoralIntake.CoralIntakeStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -139,6 +140,10 @@ public class AlgaeIntake extends FSMSubsystem {
 
     public Command elevatorSysIDDynamic(SysIdRoutine.Direction direction) {
         return algaeIntakeCharacterization.dynamic(direction);
+    }
+
+    public Command setGoalCommand(AlgaeIntakeStates goal) {
+        return startEnd(()-> setGoal(goal), ()-> setGoal(AlgaeIntakeStates.IDLE));
     }
 
     @Override
