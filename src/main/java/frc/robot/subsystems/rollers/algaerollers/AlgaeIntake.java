@@ -18,7 +18,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.subsystems.rollers.CoralIntake.CoralIntakeStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -81,6 +80,8 @@ public class AlgaeIntake extends FSMSubsystem {
                 break;
             case SHOOT:
                 setTargetRPM(SHOOT_RPM);
+                break;
+            default:
                 break;
         }
     }

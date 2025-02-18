@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.superstructure;
 
-import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;

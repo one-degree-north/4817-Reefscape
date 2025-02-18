@@ -1,7 +1,5 @@
 package frc.robot.subsystems.rollers;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;

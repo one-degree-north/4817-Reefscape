@@ -94,7 +94,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     zeroSwitchTrigger = new Trigger(() -> zeroSwitch.get());
-    autonTrigger = new Trigger(() -> DriverStation.isAutonomousEnabled());
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
     visionCommand.schedule();
     registerInitialStates();

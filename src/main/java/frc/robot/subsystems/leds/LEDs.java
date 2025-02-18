@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.leds;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -30,9 +31,12 @@ public class LEDs extends SubsystemBase {
         m_led.setLength(m_ledBuffer.getLength());
         m_led.setData(m_ledBuffer);
         m_led.start();
-
-        currentPattern = LEDPattern.solid(Color.kBlack); // Default pattern
+        setDefaultCommand(runPattern(LEDPattern.solid(Color.kBlack)).withName("Off"));
     }
+
+    public Command runPattern(LEDPattern pattern) {
+    return run(() -> pattern.applyTo(m_ledBuffer));
+  }
 
     private void setLEDPattern() {
         if (RobotState.isEnabled()) {
