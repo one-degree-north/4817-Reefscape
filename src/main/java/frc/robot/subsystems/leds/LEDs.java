@@ -4,151 +4,53 @@
 
 package frc.robot.subsystems.leds;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.utils.FSMSubsystem;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.RobotState;
+import java.util.function.Supplier;
 
-public class LEDs extends FSMSubsystem {
-    private final AddressableLED m_leds;
-    private static final AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(133);
-    private Alliance alliance = null;
+public class LEDs extends SubsystemBase {
+    private static final int LED_PORT = 0; // Adjust this to match your LED port
+    private static final int LED_COUNT = 60; // Adjust this to match your LED strip
 
-    private int animationStep = 0;
+    private final AddressableLED m_led;
+    private final AddressableLEDBuffer m_ledBuffer;
+
+    public boolean zeroed = false;
+    private final Supplier<Boolean> zeroedSupplier = () -> zeroed;
+
+    private LEDPattern currentPattern;
 
     public LEDs() {
-        setName("LEDs");
-        m_leds = new AddressableLED(0);
-        m_leds.setLength(m_ledBuffer.getLength());
-        m_leds.setData(m_ledBuffer);
-        m_leds.start();
+        m_led = new AddressableLED(LED_PORT);
+        m_ledBuffer = new AddressableLEDBuffer(LED_COUNT);
+        m_led.setLength(m_ledBuffer.getLength());
+        m_led.setData(m_ledBuffer);
+        m_led.start();
+
+        currentPattern = LEDPattern.solid(Color.kBlack); // Default pattern
     }
 
-    @Override
-    protected void enterNewState() {
-        animationStep = 0;
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // Nothing to exit
-    }
-
-    @Override
-    protected void executeCurrentStateBehavior() {
-        LEDStates currentState = (LEDStates) getCurrentState();
-        switch (currentState) {
-            case NOTZEROED:
-                setRed();
-                break;
-            case ZEROED:
-                setGreen();
-                break;
-            case INTAKED_CORAL:
-                setCoralPattern();
-                break;
-            case INTAKED_ALGAE:
-                setAlgaePattern();
-                break;
-            case INTAKED_BOTH:
-                setBothPattern();
-                break;
-        }
-        m_leds.setData(m_ledBuffer);
-        animationStep = (animationStep + 1) % 180;
-    }
-
-    private void setAllianceColor() {
-        Color allianceColor = (alliance == Alliance.Red) ? Color.kRed : Color.kBlue;
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setLED(i, allianceColor);
-        }
-    }
-
-    private void setGreen() {
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setLED(i, Color.kGreen);
-        }
-    }
-
-    private void setRed(){
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setLED(i, Color.kRed);
-        }
-    }
-
-    private void setCoralPattern() {
-        Color coral = Color.kOrangeRed;
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            if ((i + animationStep) % 5 == 0) {
-                m_ledBuffer.setLED(i, coral);
+    private void setLEDPattern() {
+        if (RobotState.isEnabled()) {
+            if (zeroedSupplier.get()) {
+                currentPattern = LEDPattern.solid(Color.kGreen);
             } else {
-                m_ledBuffer.setLED(i, Color.kBlack);
+                currentPattern = LEDPattern.solid(Color.kRed);
             }
+        } else {
+            currentPattern = LEDPattern.rainbow(200, 20);
         }
-    }
-
-    private void setAlgaePattern() {
-        Color algae = Color.kLime;
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            if ((i + animationStep) % 5 == 0) {
-                m_ledBuffer.setLED(i, algae);
-            } else {
-                m_ledBuffer.setLED(i, Color.kBlack);
-            }
-        }
-    }
-
-    private void setBothPattern() {
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            final int hue = (animationStep + (i * 180 / m_ledBuffer.getLength())) % 180;
-            m_ledBuffer.setHSV(i, hue, 255, 128);
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setLED(i, Color.kBlack);
-        }
-        m_leds.setData(m_ledBuffer);
-    }
-
-    @Override
-    public boolean isInState(Enum<?> state) {
-        return getCurrentState() == state;
-    }
-
-    @Override
-    public Enum<?> getCurrentState() {
-        return currentState;
-    }
-
-    @Override
-    public Enum<?> getDesiredState() {
-        return desiredState;
-    }
-
-    @Override
-    protected Enum<?>[] getStates() {
-        return LEDStates.values();
-    }
-
-    public void setAlliance(Alliance alliance) {
-        this.alliance = alliance;
     }
 
     @Override
     public void periodic() {
-        update();
-        alliance = DriverStation.getAlliance().get();
-    }
-
-    public enum LEDStates {
-        NOTZEROED, ZEROED, INTAKED_CORAL,
-        INTAKED_ALGAE, INTAKED_BOTH
+        setLEDPattern(); // Automatically set the pattern based on robot state
+        currentPattern.applyTo(m_ledBuffer);
+        m_led.setData(m_ledBuffer);
     }
 }
 

@@ -26,7 +26,6 @@ import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.leds.LEDs.LEDStates;
 import frc.robot.subsystems.rollers.CoralIntake;
 import frc.robot.subsystems.rollers.CoralIntake.CoralIntakeStates;
 import frc.robot.subsystems.rollers.algaerollers.AlgaeIndexer;
@@ -68,7 +67,6 @@ public class RobotContainer {
   private final DigitalInput zeroSwitch = new DigitalInput(0);
 
   private final Trigger zeroSwitchTrigger;
-  private final Trigger autonTrigger;
 
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
@@ -112,7 +110,6 @@ public class RobotContainer {
   }
 
   private void registerInitialStates(){
-    s_Leds.registerState(LEDStates.NOTZEROED);
     s_Elevator.registerState(ElevatorStates.DOCKED);
     s_AlgaeIntake.registerState(AlgaeIntakeStates.IDLE);
     s_CoralIntake.registerState(CoralIntakeStates.ROLLER_IDLE);
@@ -127,12 +124,8 @@ public class RobotContainer {
     zeroSwitchTrigger.onTrue(
       Commands.parallel(
         Commands.runOnce(() -> s_Superstructure.zeroSuperstructure()),
-        Commands.runOnce(() -> s_Leds.setGoal(LEDStates.ZEROED))
+        Commands.runOnce(() -> s_Leds.zeroed = true)
       )
-    );
-
-    autonTrigger.onTrue(
-      Commands.runOnce(() -> s_Leds.setGoal(LEDStates.INTAKED_ALGAE), s_Leds)
     );
 
     drivetrain.setDefaultCommand(
