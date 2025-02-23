@@ -72,8 +72,8 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private RobotMode currentMode = RobotMode.DRIVING;
-  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.SWERVE;
+  private RobotMode currentMode = RobotMode.TUNING;
+  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
 
   private final SendableChooser<Command> autoChooser;
 

@@ -21,7 +21,6 @@ public class LEDs extends SubsystemBase {
     private final AddressableLEDBuffer m_ledBuffer;
 
     public boolean zeroed = false;
-    private final Supplier<Boolean> zeroedSupplier = () -> zeroed;
 
     private LEDPattern currentPattern;
 
@@ -40,7 +39,7 @@ public class LEDs extends SubsystemBase {
 
     private void setLEDPattern() {
         if (RobotState.isEnabled()) {
-            if (zeroedSupplier.get()) {
+            if (zeroed) {
                 currentPattern = LEDPattern.solid(Color.kGreen);
             } else {
                 currentPattern = LEDPattern.solid(Color.kRed);
