@@ -13,10 +13,10 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -96,7 +96,7 @@ public class RobotContainer {
     zeroSwitchTrigger = new Trigger(() -> zeroSwitch.get());
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
     visionCommand.schedule();
-    registerInitialStates();
+    registerStatesNamedCommands();
     switch(currentMode){
       case DRIVING:
         driverBindings();
@@ -108,7 +108,7 @@ public class RobotContainer {
     operatorBindings();
   }
 
-  private void registerInitialStates(){
+  private void registerStatesNamedCommands(){
     s_Elevator.registerState(ElevatorStates.DOCKED);
     s_AlgaeIntake.registerState(AlgaeIntakeStates.IDLE);
     s_CoralIntake.registerState(CoralIntakeStates.ROLLER_IDLE);
@@ -116,6 +116,11 @@ public class RobotContainer {
     s_Superstructure.registerState(SuperstructureStates.STOWED);
     s_CoralPivot.registerState(CoralPivotStates.DOCKED);
     s_AlgaePivot.registerState(AlgaePivotStates.DOCKED);
+
+    NamedCommands.registerCommand("L4 Score", 
+      s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL4));
+    NamedCommands.registerCommand("Outtake Coral", 
+      s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE));
   }
 
   private void driverBindings() {

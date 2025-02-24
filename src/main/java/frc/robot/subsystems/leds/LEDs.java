@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotState;
-import java.util.function.Supplier;
 
 public class LEDs extends SubsystemBase {
     private static final int LED_PORT = 0; // Adjust this to match your LED port

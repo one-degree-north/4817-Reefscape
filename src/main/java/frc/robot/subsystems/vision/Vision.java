@@ -137,9 +137,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     */
     private void updateEstimationStdDevs(
         Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-    if (estimatedPose.isEmpty()) {
-        // No pose input. Default to single-tag std devs
-        curStdDevs = kSingleTagStdDevs;
+        if (estimatedPose.isEmpty()) {
+            // No pose input. Default to single-tag std devs
+            curStdDevs = kSingleTagStdDevs;
 
     } else {
         // Pose present. Start running Heuristic
@@ -190,17 +190,17 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     // ----- Simulation
 
     public void simulationPeriodic(Pose2d robotSimPose) {
-    visionSim.update(robotSimPose);
+        visionSim.update(robotSimPose);
     }
 
     /** Reset pose history of the robot in the vision system simulation. */
     public void resetSimPose(Pose2d pose) {
-    if (Robot.isSimulation()) visionSim.resetRobotPose(pose);
+        if (Robot.isSimulation()) visionSim.resetRobotPose(pose);
     }
 
     /** A Field2d for visualizing our robot and objects on the field. */
     public Field2d getSimDebugField() {
-    if (!Robot.isSimulation()) return null;
-    return visionSim.getDebugField();
+        if (!Robot.isSimulation()) return null;
+            return visionSim.getDebugField();
     }
     }
