@@ -34,8 +34,8 @@ public class DriveToPose extends Command {
     private final double Y_kI = 0;
     private final double Y_kD = 0;
 
-    private static final double MAX_VELOCITY_METERS_PER_SECOND = 0;
-    private static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 0;
+    private static final double MAX_VELOCITY_METERS_PER_SECOND = 5.76;
+    private static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 10;
 
     private final double FIELD_WIDTH_METERS = 8.0137;
 

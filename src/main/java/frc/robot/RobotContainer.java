@@ -64,7 +64,7 @@ public class RobotContainer {
 
   private final LEDs s_Leds = new LEDs();
 
-  private final DigitalInput zeroSwitch = new DigitalInput(0);
+  private final DigitalInput zeroSwitch = new DigitalInput(1);
 
   private final Trigger zeroSwitchTrigger;
 
@@ -73,7 +73,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private RobotMode currentMode = RobotMode.TUNING;
-  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
+  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -133,11 +133,11 @@ public class RobotContainer {
     );
 
     drivetrain.setDefaultCommand(
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate)
-            )
+      drivetrain.applyRequest(() ->
+          drive.withVelocityX(-driver.getLeftY() * MaxSpeed)
+              .withVelocityY(-driver.getLeftX() * MaxSpeed)
+              .withRotationalRate(-driver.getRightX() * MaxAngularRate)
+      )
     );
 
     //CORAL SCORING

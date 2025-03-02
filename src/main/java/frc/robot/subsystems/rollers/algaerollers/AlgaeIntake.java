@@ -23,7 +23,7 @@ import frc.utils.TalonFXConfigurator;
 
 public class AlgaeIntake extends FSMSubsystem {
     // Constants
-    private static final int ALGAE_INTAKE_MASTER_ID = 40; // Replace with actual ID
+    private static final int ALGAE_INTAKE_MASTER_ID = 41; // Replace with actual ID
     private static final int ALGAE_INTAKE_SLAVE_ID = -1; // Replace with actual ID or -1 if no follower
     private static final double INTAKE_VOLTAGE = 6.0; // Voltage for intake
     private static final double OUTTAKE_VOLTAGE = -6.0; // Voltage for outtake

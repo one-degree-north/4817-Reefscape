@@ -22,7 +22,7 @@ import frc.utils.TalonFXConfigurator;
 
 public class AlgaePivot extends FSMSubsystem {
 // Constants
-private static final int ALGAE_PIVOT_ID = 20; // Replace with actual ID
+private static final int ALGAE_PIVOT_ID = 3; // Replace with actual ID
 private static final double DOCKED_POSITION = 0.0; // Replace with actual docked position
 private static final double INTAKING_POSITION = 10.0; // Replace with actual extended position
 private static final double SCORING_POSITION = 20.0; // Replace with actual scoring position

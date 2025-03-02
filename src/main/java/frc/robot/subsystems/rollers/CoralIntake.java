@@ -14,8 +14,8 @@ import frc.utils.TalonFXConfigurator;
 
 public class CoralIntake extends FSMSubsystem {
   // Constants
-  private static final int LEFT_ROLLER_ID = 10; // Replace with actual ID
-  private static final int RIGHT_ROLLER_ID = 11; // Replace with actual ID
+  private static final int LEFT_ROLLER_ID = 4; // Replace with actual ID
+  private static final int RIGHT_ROLLER_ID = 5; // Replace with actual ID
   private static final double ROLLER_INTAKE_VOLTAGE = 6.0; // Replace with actual voltage
   private static final double ROLLER_OUTTAKE_VOLTAGE = -6.0; // Replace with actual voltage
   private static final double ROLLER_LVL1_VOLTAGE = 3.0; // Replace with actual voltage for LVL1

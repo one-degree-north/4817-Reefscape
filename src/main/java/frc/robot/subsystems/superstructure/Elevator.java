@@ -25,9 +25,9 @@ import frc.utils.TalonFXConfigurator;
 
 public class Elevator extends FSMSubsystem {
     // Constants
-    private static final int ELEVATOR_MASTER_ID = 10;
-    private static final int ELEVATOR_SLAVE_ID = 11;
-    private static final int MAGNETIC_LIMIT_SWITCH_ID = 1;
+    private static final int ELEVATOR_MASTER_ID = 2;
+    private static final int ELEVATOR_SLAVE_ID = 1;
+    private static final int MAGNETIC_LIMIT_SWITCH_ID = 2;
     private static final double kP = 0.1;
     private static final double kI = 0.0;
     private static final double kD = 0.0;

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotState;
 
 public class LEDs extends SubsystemBase {
     private static final int LED_PORT = 0; // Adjust this to match your LED port
-    private static final int LED_COUNT = 60; // Adjust this to match your LED strip
+    private static final int LED_COUNT = 133; // Adjust this to match your LED strip
 
     private final AddressableLED m_led;
     private final AddressableLEDBuffer m_ledBuffer;
@@ -33,8 +33,8 @@ public class LEDs extends SubsystemBase {
     }
 
     public Command runPattern(LEDPattern pattern) {
-    return run(() -> pattern.applyTo(m_ledBuffer));
-  }
+        return run(() -> pattern.applyTo(m_ledBuffer));
+    }
 
     private void setLEDPattern() {
         if (RobotState.isEnabled()) {

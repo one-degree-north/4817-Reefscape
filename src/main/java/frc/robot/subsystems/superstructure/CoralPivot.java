@@ -24,7 +24,7 @@ import frc.utils.TalonFXConfigurator;
 public class CoralPivot extends FSMSubsystem {
   //Constants
 
-  private static final int CORAL_PIVOT_ID = 0;
+  private static final int CORAL_PIVOT_ID = 3;
   private static final double kP = 0.1;
   private static final double kI = 0.0;
   private static final double kD = 0.0;
@@ -39,7 +39,7 @@ public class CoralPivot extends FSMSubsystem {
   private static final double CORAL_PIVOT_DOCKED_POS = 0.0;
   private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.0;
   private static final double CORAL_PIVOT_REEF_POS = 0.0;
-  private static final double CORAL_PIVOT_ALLOWED_ERROR = 0;
+  private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivotMotor;
 

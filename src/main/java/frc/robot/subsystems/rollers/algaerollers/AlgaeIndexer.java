@@ -18,19 +18,19 @@ import frc.utils.TalonFXConfigurator;
 
 public class AlgaeIndexer extends FSMSubsystem {
     // Constants
-    private static final int INDEXER_MOTOR_ID = 30; // Replace with actual ID
-    private static final int BEAM_BREAK_PORT = 0; // Replace with actual port
+    private static final int INDEXER_MOTOR_ID = 43; // Replace with actual ID
+    //private static final int BEAM_BREAK_PORT = 0; // Replace with actual port
     private static final double INTAKE_VOLTAGE = 6.0; // Replace with actual voltage
     private static final double OUTTAKE_VOLTAGE = -6.0; // Replace with actual voltage
 
     private TalonFX m_indexerMotor;
-    private DigitalInput m_beamBreak;
+    //private DigitalInput m_beamBreak;
     private VoltageOut voltageOut = new VoltageOut(0);
 
     public AlgaeIndexer() {
         setName("AlgaeIndexer");
         m_indexerMotor = new TalonFX(INDEXER_MOTOR_ID, "rio");
-        m_beamBreak = new DigitalInput(BEAM_BREAK_PORT);
+        //m_beamBreak = new DigitalInput(BEAM_BREAK_PORT);
         configureMotor();
     }
 
@@ -59,7 +59,7 @@ public class AlgaeIndexer extends FSMSubsystem {
 
     @Override
     protected void executeCurrentStateBehavior() {
-        if (isBeamBreakActivated() && getCurrentState() == AlgaeIndexerStates.INTAKING) {
+        if (getCurrentState() == AlgaeIndexerStates.INTAKING) {
             stop();
             setGoal(AlgaeIndexerStates.IDLE);
         }
@@ -71,9 +71,9 @@ public class AlgaeIndexer extends FSMSubsystem {
         }
     }
 
-    public boolean isBeamBreakActivated() {
-        return m_beamBreak.get();
-    }
+    // public boolean isBeamBreakActivated() {
+    //     return m_beamBreak.get();
+    // }
 
     public Command setGoalCommand(AlgaeIndexerStates goal) {
         return startEnd(()-> setGoal(goal), ()-> setGoal(AlgaeIndexerStates.INTAKING));
@@ -108,7 +108,7 @@ public class AlgaeIndexer extends FSMSubsystem {
     public void periodic() {
         update(); // Call the FSMSubsystem's update method
         SmartDashboard.putString("AlgaeIndexerState", getCurrentState().toString());
-        SmartDashboard.putBoolean("AlgaeBeamBreak", isBeamBreakActivated());
+        //SmartDashboard.putBoolean("AlgaeBeamBreak", isBeamBreakActivated());
     }
 
     public enum AlgaeIndexerStates {
