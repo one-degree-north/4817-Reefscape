@@ -160,9 +160,9 @@ public Enum<?> getDesiredState() {
 @Override
 public void periodic() {
     update(); // Call the FSMSubsystem's update method
-    SmartDashboard.putString("AlgaeIntakeState", getCurrentState().toString());
-    SmartDashboard.putNumber("AlgaeIntakePosition", m_algaePivot.getPosition().getValueAsDouble());
-    SmartDashboard.putString("AlgaeIntakeNeutralMode", currentNeutralMode.toString());
+    SmartDashboard.putString("AlgaePivotState", getCurrentState().toString());
+    SmartDashboard.putNumber("AlgaePivotPosition", m_algaePivot.getPosition().getValueAsDouble());
+    SmartDashboard.putString("AlgaePivotNeutralMode", currentNeutralMode.toString());
 }
 
 public enum AlgaePivotStates {

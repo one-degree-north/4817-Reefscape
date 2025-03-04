@@ -25,8 +25,8 @@ public class AlgaeIntake extends FSMSubsystem {
     // Constants
     private static final int ALGAE_INTAKE_MASTER_ID = 41; // Replace with actual ID
     private static final int ALGAE_INTAKE_SLAVE_ID = -1; // Replace with actual ID or -1 if no follower
-    private static final double INTAKE_VOLTAGE = 6.0; // Voltage for intake
-    private static final double OUTTAKE_VOLTAGE = -6.0; // Voltage for outtake
+    private static final double INTAKE_VOLTAGE = 2.0; // Voltage for intake
+    private static final double OUTTAKE_VOLTAGE = -2.0; // Voltage for outtake
     private static final double SHOOT_RPM = 5000.0; // RPM for shooting
     private static final double RPM_TOLERANCE = 50.0; // Tolerance for reaching desired RPM
 
@@ -48,16 +48,16 @@ public class AlgaeIntake extends FSMSubsystem {
         // Configure the primary motor
         TalonFXConfigurator.configureTalonFX(
             m_algaeIntakeMaster,
-            "KrakenX60",
+            "Falcon500",
             NeutralModeValue.Brake,
-            InvertedValue.Clockwise_Positive,
+            InvertedValue.CounterClockwise_Positive,
             null, null, null, null, null, null, null, null, null, null, null
         );
 
         if (hasFollower && m_algaeIntakeSlave != null) {
             TalonFXConfigurator.configureTalonFX(
                 m_algaeIntakeSlave,
-                "KrakenX60",
+                "Falcon500",
                 NeutralModeValue.Brake,
                 InvertedValue.Clockwise_Positive,
                 null, null, null, null, null, null, null, null, null, null, null
@@ -81,6 +81,8 @@ public class AlgaeIntake extends FSMSubsystem {
             case SHOOT:
                 setTargetRPM(SHOOT_RPM);
                 break;
+            case IDLE:
+                setTargetRPM(0);
             default:
                 break;
         }

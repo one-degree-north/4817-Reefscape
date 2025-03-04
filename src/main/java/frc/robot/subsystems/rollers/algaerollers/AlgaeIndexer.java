@@ -20,8 +20,8 @@ public class AlgaeIndexer extends FSMSubsystem {
     // Constants
     private static final int INDEXER_MOTOR_ID = 43; // Replace with actual ID
     //private static final int BEAM_BREAK_PORT = 0; // Replace with actual port
-    private static final double INTAKE_VOLTAGE = 6.0; // Replace with actual voltage
-    private static final double OUTTAKE_VOLTAGE = -6.0; // Replace with actual voltage
+    private static final double INTAKE_VOLTAGE = 1.0; // Replace with actual voltage
+    private static final double OUTTAKE_VOLTAGE = -1.0; // Replace with actual voltage
 
     private TalonFX m_indexerMotor;
     //private DigitalInput m_beamBreak;
@@ -59,10 +59,6 @@ public class AlgaeIndexer extends FSMSubsystem {
 
     @Override
     protected void executeCurrentStateBehavior() {
-        if (getCurrentState() == AlgaeIndexerStates.INTAKING) {
-            stop();
-            setGoal(AlgaeIndexerStates.IDLE);
-        }
     }
 
     private void setMotorVoltage(double voltage) {
@@ -76,7 +72,7 @@ public class AlgaeIndexer extends FSMSubsystem {
     // }
 
     public Command setGoalCommand(AlgaeIndexerStates goal) {
-        return startEnd(()-> setGoal(goal), ()-> setGoal(AlgaeIndexerStates.INTAKING));
+        return startEnd(()-> setGoal(goal), ()-> setGoal(AlgaeIndexerStates.IDLE));
     }
 
     @Override

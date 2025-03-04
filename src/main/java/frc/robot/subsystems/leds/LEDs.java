@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.RobotState;
 
 public class LEDs extends SubsystemBase {
     private static final int LED_PORT = 0; // Adjust this to match your LED port
-    private static final int LED_COUNT = 133; // Adjust this to match your LED strip
+    private static final int LED_COUNT = 200; // Adjust this to match your LED strip
 
     private final AddressableLED m_led;
     private final AddressableLEDBuffer m_ledBuffer;

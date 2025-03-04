@@ -189,6 +189,7 @@ public class Elevator extends FSMSubsystem {
 
         SmartDashboard.putString("ElevatorState", getCurrentState().toString());
         SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putBoolean("IsElevatorDown", isElevatorDown());
     }
 
     public enum ElevatorStates {

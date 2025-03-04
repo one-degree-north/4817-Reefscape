@@ -72,7 +72,7 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private RobotMode currentMode = RobotMode.TUNING;
+  private RobotMode currentMode = RobotMode.DRIVING;
   private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
 
   private final SendableChooser<Command> autoChooser;
@@ -171,23 +171,39 @@ public class RobotContainer {
       )
     );
 
+    //OUTTAKE CORAL
+    driver.circle().whileTrue(
+      Commands.parallel(
+        //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
+      )
+    );
+
     //INTAKE CORAL FROM HP
     driver.triangle().whileTrue(
       Commands.parallel(
-        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+        //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
         s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
       )
     );
 
     //INTAKE ALGAE
-    driver.circle().whileTrue(
+    driver.cross().whileTrue(
       Commands.parallel(
-        s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
+        //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
         s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
         s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
       )
     );
-    //ALGAE: docked (both rollers not spining), intaking (both rollers spinning), ramping (pivot extended, end effector rolling), shoot(all motors spinning, pivot fully out), processor(pivot pulled back, stationary roller spinning)
+
+    //OUTTAKE ALGAE
+    driver.square().whileTrue(
+      Commands.parallel(
+        //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
+        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.OUTTAKE)
+      )
+    );
   }
 
   private void operatorBindings(){
