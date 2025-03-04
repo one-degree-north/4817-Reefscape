@@ -6,6 +6,7 @@ package frc.robot.subsystems.superstructure;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -114,7 +115,8 @@ public void zeroAndToggleIdleMode() {
 }
 
 private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(2, Volts), null),
+    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(2, Volts), null,
+        (state)-> SignalLogger.writeString("staet", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
         m_algaePivot.setControl(voltageOut.withOutput(volts));

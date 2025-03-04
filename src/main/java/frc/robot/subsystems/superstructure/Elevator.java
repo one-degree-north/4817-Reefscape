@@ -6,6 +6,7 @@ package frc.robot.subsystems.superstructure;
 
 import static edu.wpi.first.units.Units.Volt;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -119,7 +120,8 @@ public class Elevator extends FSMSubsystem {
     }
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
-        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3.5, Volt), null),
+        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3.5, Volt), null,
+            (state)-> SignalLogger.writeString("staet", state.toString())),
         new SysIdRoutine.Mechanism(
             (Voltage volts) -> {
                 m_elevatorMasterMotor.setControl(voltageOut.withOutput(volts));

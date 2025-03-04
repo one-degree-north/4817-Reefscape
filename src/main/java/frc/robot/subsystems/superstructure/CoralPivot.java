@@ -6,6 +6,7 @@ package frc.robot.subsystems.superstructure;
 
 import static edu.wpi.first.units.Units.Volt;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -92,7 +93,8 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(0.2, Volt), null),
+    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(0.2, Volt), null,
+      (state)-> SignalLogger.writeString("staet", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
           m_coralPivotMotor.setControl(voltageOut.withOutput(volts));
