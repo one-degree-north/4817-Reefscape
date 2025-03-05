@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -14,6 +15,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -115,8 +118,10 @@ public void zeroAndToggleIdleMode() {
 }
 
 private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(null, Voltage.ofBaseUnits(2, Volts), null,
-        (state)-> SignalLogger.writeString("staet", state.toString())),
+    new SysIdRoutine.Config(Velocity.ofBaseUnits(0.1, null), 
+        Volts.of(2), 
+        Time.ofBaseUnits(6, Seconds),
+        (state)-> SignalLogger.writeString("state", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
         m_algaePivot.setControl(voltageOut.withOutput(volts));

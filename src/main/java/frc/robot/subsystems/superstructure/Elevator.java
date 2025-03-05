@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -120,8 +121,10 @@ public class Elevator extends FSMSubsystem {
     }
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
-        new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3.5, Volt), null,
-            (state)-> SignalLogger.writeString("staet", state.toString())),
+        new SysIdRoutine.Config(Velocity.ofBaseUnits(0.2, null),
+            Voltage.ofBaseUnits(2.5, Volt), 
+            null,
+            (state)-> SignalLogger.writeString("state", state.toString())),
         new SysIdRoutine.Mechanism(
             (Voltage volts) -> {
                 m_elevatorMasterMotor.setControl(voltageOut.withOutput(volts));

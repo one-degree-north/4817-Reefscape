@@ -72,7 +72,7 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private RobotMode currentMode = RobotMode.TUNING;
+  private RobotMode currentMode = RobotMode.DRIVING;
   private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
 
   private final SendableChooser<Command> autoChooser;
@@ -187,12 +187,12 @@ public class RobotContainer {
       )
     );
 
-    //INTAKE ALGAE
+    //SHOOT ALGAE
     driver.cross().whileTrue(
       Commands.parallel(
         //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
         s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT)
       )
     );
 
