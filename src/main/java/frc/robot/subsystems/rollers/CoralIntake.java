@@ -66,7 +66,7 @@ public class CoralIntake extends FSMSubsystem {
   }
 
   @Override
-  protected void enterNewState() {
+  protected void executeCurrentStateBehavior() {
     CoralIntakeStates newState = (CoralIntakeStates)getCurrentState();
     switch (newState) {
       case ROLLER_LVL1:
@@ -76,16 +76,6 @@ public class CoralIntake extends FSMSubsystem {
         setRollersVoltage(newState.getSetpointValue(), newState.getSetpointValue());
         break;
     }
-  }
-
-  @Override
-  protected void exitCurrentState() {
-    // No specific exit actions needed
-  }
-
-  @Override
-  protected void executeCurrentStateBehavior() {
-    // Continuous behavior for the current state, if any
   }
 
   @Override
@@ -105,9 +95,9 @@ public class CoralIntake extends FSMSubsystem {
   }
 
   @Override
-public Enum<?> getDesiredState() {
-    return desiredState;
-}
+  public Enum<?> getDesiredState() {
+      return desiredState;
+  }
 
   @Override
   protected Enum<?>[] getStates() {
@@ -121,7 +111,8 @@ public Enum<?> getDesiredState() {
   @Override
   public void periodic() {
     update(); // Call the FSMSubsystem's update method
-    SmartDashboard.putString("CoralIntakeState", getCurrentState().toString());
+    SmartDashboard.putString("Coral Intake State", getCurrentState().toString());
+    SmartDashboard.putNumber("Coral Intake RPS", m_leftRoller.getVelocity().getValueAsDouble());
   }
 
   public enum CoralIntakeStates {

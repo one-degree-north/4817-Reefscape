@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -16,7 +17,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,19 +72,9 @@ private void configureMotor() {
 }
 
 @Override
-protected void enterNewState() {
+protected void executeCurrentStateBehavior() {
     AlgaePivotStates newState = (AlgaePivotStates)getCurrentState();
     setMotorPosition(newState.getSetpointValue());
-}
-
-@Override
-protected void exitCurrentState() {
-    // No specific exit actions needed
-}
-
-@Override
-protected void executeCurrentStateBehavior() {
-    setGoal(getCurrentState());
 }
 
 private void setMotorPosition(double position) {
@@ -118,10 +108,11 @@ public void zeroAndToggleIdleMode() {
 }
 
 private final SysIdRoutine algaePivotCharacterization = new SysIdRoutine(
-    new SysIdRoutine.Config(Velocity.ofBaseUnits(0.1, null), 
-        Volts.of(2), 
-        Time.ofBaseUnits(6, Seconds),
-        (state)-> SignalLogger.writeString("state", state.toString())),
+    new SysIdRoutine.Config(
+        Volts.of(0.25).per(Second), 
+        Volts.of(3.5), 
+        Time.ofBaseUnits(5, Seconds),
+        (state)-> SignalLogger.writeString("AlgaePivotState", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
         m_algaePivot.setControl(voltageOut.withOutput(volts));
@@ -167,9 +158,9 @@ public Enum<?> getDesiredState() {
 @Override
 public void periodic() {
     update(); // Call the FSMSubsystem's update method
-    SmartDashboard.putString("AlgaePivotState", getCurrentState().toString());
-    SmartDashboard.putNumber("AlgaePivotPosition", m_algaePivot.getPosition().getValueAsDouble());
-    SmartDashboard.putString("AlgaePivotNeutralMode", currentNeutralMode.toString());
+    SmartDashboard.putString("Algae Pivot State", getCurrentState().toString());
+    SmartDashboard.putNumber("Algae Pivot Position", m_algaePivot.getPosition().getValueAsDouble());
+    SmartDashboard.putString("Algae Pivot NeutralMode", currentNeutralMode.toString());
 }
 
 public enum AlgaePivotStates {

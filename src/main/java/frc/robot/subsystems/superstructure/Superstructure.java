@@ -24,9 +24,25 @@ public class Superstructure extends FSMSubsystem {
         s_elevator = elevator;
     }
 
+    public Command setGoalCommand(SuperstructureStates goal) {
+        return startEnd(()-> setGoal(goal), ()-> setGoal(SuperstructureStates.STOWED));
+    }
+
+    public Command setConditionalGoalCommand(Supplier<SuperstructureStates> goal) {
+        return setGoalCommand(goal.get());
+    }
+
+    public Command zeroSuperstructure(){
+        return Commands.parallel(
+            Commands.runOnce(()-> s_algaePivot.zeroAndToggleIdleMode(), s_algaePivot),
+            Commands.runOnce(()-> s_coralPivot.zeroAndToggleIdleMode(), s_coralPivot),
+            Commands.runOnce(()-> s_elevator.zeroAndToggleIdleMode(), s_elevator)
+        );
+    }
+
     @Override
-    protected void enterNewState() {
-        SuperstructureStates newState = (SuperstructureStates) getDesiredState();
+    protected void executeCurrentStateBehavior() {
+        SuperstructureStates newState = (SuperstructureStates) getCurrentState();
         switch (newState) {
             case ALGAE_EXTENDED:
                 s_algaePivot
@@ -132,32 +148,6 @@ public class Superstructure extends FSMSubsystem {
         }
     }
 
-    public Command setGoalCommand(SuperstructureStates goal) {
-        return startEnd(()-> setGoal(goal), ()-> setGoal(SuperstructureStates.STOWED));
-    }
-
-    public Command setConditionalGoalCommand(Supplier<SuperstructureStates> goal) {
-        return setGoalCommand(goal.get());
-    }
-
-    public Command zeroSuperstructure(){
-        return Commands.parallel(
-            Commands.runOnce(()-> s_algaePivot.zeroAndToggleIdleMode(), s_algaePivot),
-            Commands.runOnce(()-> s_coralPivot.zeroAndToggleIdleMode(), s_coralPivot),
-            Commands.runOnce(()-> s_elevator.zeroAndToggleIdleMode(), s_elevator)
-        );
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // No specific exit actions needed
-    }
-
-    @Override
-    protected void executeCurrentStateBehavior() {
-        setGoal(getCurrentState());
-    }
-
     @Override
     public void stop() {
         s_algaePivot.stop();
@@ -188,7 +178,7 @@ public class Superstructure extends FSMSubsystem {
     @Override
     public void periodic() {
         update(); // Call the FSMSubsystem's update method
-        SmartDashboard.putString("SuperstructureState", getCurrentState().toString());
+        SmartDashboard.putString("Superstructure State", getCurrentState().toString());
     }
 
     public enum SuperstructureStates {

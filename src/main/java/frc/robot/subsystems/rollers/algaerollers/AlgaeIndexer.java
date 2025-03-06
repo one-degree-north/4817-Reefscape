@@ -20,8 +20,8 @@ public class AlgaeIndexer extends FSMSubsystem {
     // Constants
     private static final int INDEXER_MOTOR_ID = 43; // Replace with actual ID
     //private static final int BEAM_BREAK_PORT = 0; // Replace with actual port
-    private static final double INTAKE_VOLTAGE = 1.0; // Replace with actual voltage
-    private static final double OUTTAKE_VOLTAGE = -1.0; // Replace with actual voltage
+    private static final double INTAKE_VOLTAGE = 3.5; // Replace with actual voltage
+    private static final double OUTTAKE_VOLTAGE = -4; // Replace with actual voltage
 
     private TalonFX m_indexerMotor;
     //private DigitalInput m_beamBreak;
@@ -47,18 +47,9 @@ public class AlgaeIndexer extends FSMSubsystem {
     }
 
     @Override
-    protected void enterNewState() {
+    protected void executeCurrentStateBehavior() {
         AlgaeIndexerStates newState = (AlgaeIndexerStates)getCurrentState();
         setMotorVoltage(newState.getSetpointValue());
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // No specific exit actions needed
-    }
-
-    @Override
-    protected void executeCurrentStateBehavior() {
     }
 
     private void setMotorVoltage(double voltage) {
@@ -103,7 +94,8 @@ public class AlgaeIndexer extends FSMSubsystem {
     @Override
     public void periodic() {
         update(); // Call the FSMSubsystem's update method
-        SmartDashboard.putString("AlgaeIndexerState", getCurrentState().toString());
+        SmartDashboard.putNumber("Algae Indexer RPS", m_indexerMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putString("Algae Indexer State", getCurrentState().toString());
         //SmartDashboard.putBoolean("AlgaeBeamBreak", isBeamBreakActivated());
     }
 

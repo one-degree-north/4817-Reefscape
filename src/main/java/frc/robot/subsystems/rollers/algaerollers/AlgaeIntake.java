@@ -28,7 +28,7 @@ public class AlgaeIntake extends FSMSubsystem {
     private static final int ALGAE_INTAKE_SLAVE_ID = -1; // Replace with actual ID or -1 if no follower
     private static final double INTAKE_VOLTAGE = 2.0; // Voltage for intake
     private static final double OUTTAKE_VOLTAGE = -INTAKE_VOLTAGE; // Voltage for outtake
-    private static final double SHOOT_RPM = 4000.0; // RPM for shooting
+    private static final double SHOOT_RPM = 5000.0; // RPM for shooting
     private static final double RPM_TOLERANCE = 50.0; // Tolerance for reaching desired RPM
 
     private TalonFX m_algaeIntakeMaster;
@@ -70,7 +70,7 @@ public class AlgaeIntake extends FSMSubsystem {
     }
 
     @Override
-    protected void enterNewState() {
+    protected void executeCurrentStateBehavior() {
         AlgaeIntakeStates newState = (AlgaeIntakeStates) getCurrentState();
         switch (newState) {
             case INTAKE:
@@ -87,16 +87,6 @@ public class AlgaeIntake extends FSMSubsystem {
             default:
                 break;
         }
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // No specific exit actions needed
-    }
-
-    @Override
-    protected void executeCurrentStateBehavior() {
-        // Continuous behavior for the current state (if any)
     }
 
     private void setVoltage(double voltage) {
@@ -129,7 +119,7 @@ public class AlgaeIntake extends FSMSubsystem {
 
     private final SysIdRoutine algaeIntakeCharacterization = new SysIdRoutine(
         new SysIdRoutine.Config(null, Voltage.ofBaseUnits(3, Volt), null,
-            (state)-> SignalLogger.writeString("state", state.toString())),
+            (state)-> SignalLogger.writeString("AlgaeIntakeState", state.toString())),
         new SysIdRoutine.Mechanism(
             (Voltage volts) -> {
                 m_algaeIntakeMaster.setControl(voltageOut.withOutput(volts));
@@ -183,9 +173,9 @@ public class AlgaeIntake extends FSMSubsystem {
     public void periodic() {
         update(); // Call the FSMSubsystem's update method
 
-        SmartDashboard.putString("AlgaeIntakeState", getCurrentState().toString());
-        SmartDashboard.putNumber("AlgaeIntakeCurrentRPM", getCurrentRPM());
-        SmartDashboard.putBoolean("AlgaeIntakeAtTargetRPM", isAtTargetRPM());
+        SmartDashboard.putString("Algae Intake State", getCurrentState().toString());
+        SmartDashboard.putNumber("Algae Intake Current RPM", getCurrentRPM());
+        SmartDashboard.putBoolean("Algae Intake At TargetRPM?", isAtTargetRPM());
     }
 
     public enum AlgaeIntakeStates {

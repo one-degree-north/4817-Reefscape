@@ -4,9 +4,10 @@
 
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volt;
-import static edu.wpi.first.units.Units.VoltsPerMeterPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -18,7 +19,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -98,10 +98,10 @@ public class CoralPivot extends FSMSubsystem {
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
     new SysIdRoutine.Config(
-      Velocity.ofBaseUnits(0.2, null), 
+      Volts.of(0.5).per(Second), 
       Volt.of(1.5), 
-      Time.ofBaseUnits(6, Seconds),
-      (state)-> SignalLogger.writeString("state", state.toString())),
+      Time.ofBaseUnits(4, Seconds),
+      (state)-> SignalLogger.writeString("CoralPivotState", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
           m_coralPivotMotor.setControl(voltageOut.withOutput(volts));
@@ -125,19 +125,9 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   @Override
-  protected void enterNewState() {
+  protected void executeCurrentStateBehavior() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
     setControl(m_coralPivotMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
-  }
-
-  @Override
-  protected void exitCurrentState() {
-    // No specific exit actions needed
-  }
-
-  @Override
-  protected void executeCurrentStateBehavior() {
-    setGoal(getCurrentState());
   }
 
   @Override
@@ -171,6 +161,7 @@ public class CoralPivot extends FSMSubsystem {
 
     SmartDashboard.putString("Coral Pivot State", getCurrentState().toString());
     SmartDashboard.putNumber("Coral Pivot Position", m_coralPivotMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putBoolean("Coral Pivot AtGoal?", atGoal());
   }
 
   public enum CoralPivotStates {

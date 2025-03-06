@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volt;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -16,7 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -121,10 +122,11 @@ public class Elevator extends FSMSubsystem {
     }
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
-        new SysIdRoutine.Config(Velocity.ofBaseUnits(0.2, null),
-            Voltage.ofBaseUnits(2.5, Volt), 
+        new SysIdRoutine.Config(
+            Volts.of(0.25).per(Second),
+            Voltage.ofBaseUnits(3.5, Volt), 
             null,
-            (state)-> SignalLogger.writeString("state", state.toString())),
+            (state)-> SignalLogger.writeString("ElevatorState", state.toString())),
         new SysIdRoutine.Mechanism(
             (Voltage volts) -> {
                 m_elevatorMasterMotor.setControl(voltageOut.withOutput(volts));
@@ -148,19 +150,10 @@ public class Elevator extends FSMSubsystem {
     }
 
     @Override
-    protected void enterNewState() {
-        ElevatorStates newState = (ElevatorStates)getCurrentState();
-        setControl(m_elevatorMasterMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
-    }
-
-    @Override
-    protected void exitCurrentState() {
-        // No specific exit actions needed
-    }
-
-    @Override
     protected void executeCurrentStateBehavior() {
-        setGoal(getCurrentState());
+        ElevatorStates newState = (ElevatorStates)getCurrentState();
+        setControl(m_elevatorMasterMotor, 
+            motionMagicVoltage.withPosition(newState.getSetpointValue()));
     }
 
     @Override
@@ -192,9 +185,10 @@ public class Elevator extends FSMSubsystem {
     public void periodic() {
         update();
 
-        SmartDashboard.putString("ElevatorState", getCurrentState().toString());
+        SmartDashboard.putString("Elevator State", getCurrentState().toString());
         SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putBoolean("IsElevatorDown", isElevatorDown());
+        SmartDashboard.putBoolean("Is Elevator Down", isElevatorDown());
+        SmartDashboard.putBoolean("Is Elevator AtGoal?", atGoal());
     }
 
     public enum ElevatorStates {

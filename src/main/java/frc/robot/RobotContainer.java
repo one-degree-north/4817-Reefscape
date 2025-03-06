@@ -105,7 +105,7 @@ public class RobotContainer {
         tuningBindings();
         break;
     }
-    operatorBindings();
+    //operatorBindings();
   }
 
   private void registerStatesNamedCommands(){
@@ -155,11 +155,14 @@ public class RobotContainer {
     driver.L2().whileTrue(
       Commands.sequence(
         Commands.deadline(
+          Commands.waitUntil(() -> driver.getL2Axis() > 0.9),
           s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.IDLE)),
-        Commands.waitUntil(() -> driver.getL2Axis() > 0.9),
-        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.OUTTAKE)
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
+        Commands.parallel(
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
+        )
       )
     );
 
@@ -187,21 +190,28 @@ public class RobotContainer {
       )
     );
 
-    //SHOOT ALGAE
+    //SHOOT ALGAE (NO PIVOT)
     driver.cross().whileTrue(
-      Commands.parallel(
-        //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
-        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT)
+      Commands.sequence(
+        Commands.deadline(
+          Commands.waitSeconds(2),
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)
+        ),
+        Commands.parallel(
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT)
+        )
+        
       )
     );
 
-    //OUTTAKE ALGAE
+    //INTAKE ALGAE
     driver.square().whileTrue(
       Commands.parallel(
         //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
-        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.OUTTAKE)
+        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
       )
     );
   }
