@@ -38,10 +38,10 @@ public class Elevator extends FSMSubsystem {
     private static final double kV = 0.12;
     private static final double kA = 0.0;
     private static final double kG = 0.0;
-    private static final double ELEVATOR_GEAR_RATIO = 1.0;
-    private static final double MM_ACCELERATION = 100.0;
-    private static final double MM_CRUISE_VELOCITY = 200.0;
-    private static final double MM_JERK = 1000.0;
+    private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
+    private static final double MM_ACCELERATION = 0;
+    private static final double MM_CRUISE_VELOCITY = 0;
+    private static final double MM_JERK = 0;
     private static final double ELEVATOR_DOCKED_POS = 0.0;
     private static final double ELEVATOR_L1_POS = 10.0;
     private static final double ELEVATOR_L2_POS = 20.0;

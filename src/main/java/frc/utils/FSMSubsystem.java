@@ -29,8 +29,8 @@ public abstract class FSMSubsystem extends SubsystemBase {
             return; // Do nothing if states are not registered yet
         } else if (currentState != desiredState) {
             handleStateTransition();
+            executeCurrentStateBehavior();
         }
-        executeCurrentStateBehavior();
     }
 
     @Deprecated

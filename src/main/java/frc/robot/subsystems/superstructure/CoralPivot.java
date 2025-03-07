@@ -37,7 +37,7 @@ public class CoralPivot extends FSMSubsystem {
   private static final double kV = 0.12;
   private static final double kA = 0.0;
   private static final double kG = 0.0;
-  private static final double CORAL_PIVOT_GEAR_RATIO = 0;
+  private static final double CORAL_PIVOT_GEAR_RATIO = 12/1;
   private static final double MM_ACCELERATION = 0;
   private static final double MM_CRUISE_VELOCITY = 0;
   private static final double MM_JERK = 0;

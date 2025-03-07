@@ -26,7 +26,7 @@ import frc.utils.TalonFXConfigurator;
 
 public class AlgaePivot extends FSMSubsystem {
 // Constants
-private static final int ALGAE_PIVOT_ID = 3; // Replace with actual ID
+private static final int ALGAE_PIVOT_ID = 42; // Replace with actual ID
 private static final double DOCKED_POSITION = 0.0; // Replace with actual docked position
 private static final double INTAKING_POSITION = 10.0; // Replace with actual extended position
 private static final double SCORING_POSITION = 20.0; // Replace with actual scoring position
@@ -38,10 +38,10 @@ private static final double kS = 0.0;
 private static final double kV = 0.12;
 private static final double kA = 0.0;
 private static final double kG = 0.0;
-private static final double MECHANISM_RATIO = 1.0;
-private static final double MM_ACCELERATION = 100.0;
-private static final double MM_CRUISE_VELOCITY = 200.0;
-private static final double MM_JERK = 1000.0;
+private static final double MECHANISM_RATIO = 7/1;
+private static final double MM_ACCELERATION = 0;
+private static final double MM_CRUISE_VELOCITY = 0;
+private static final double MM_JERK = 0;
 private static final double POSITION_TOLERANCE = 0.1;
 
 private TalonFX m_algaePivot;

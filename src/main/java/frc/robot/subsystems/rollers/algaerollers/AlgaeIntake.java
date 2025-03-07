@@ -52,7 +52,7 @@ public class AlgaeIntake extends FSMSubsystem {
             "Falcon500",
             NeutralModeValue.Brake,
             InvertedValue.CounterClockwise_Positive,
-            0.23861, null, null, 0.061375, 0.16521, 0.0028082, null, 1.5/1, null, null, null
+            0.23861, null, null, 0.061375, 0.16521, 0.0028082, null, 0.6666666667/1, null, null, null
         );
 
         if (hasFollower && m_algaeIntakeSlave != null) {

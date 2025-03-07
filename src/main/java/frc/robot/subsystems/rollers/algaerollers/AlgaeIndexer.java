@@ -41,8 +41,8 @@ public class AlgaeIndexer extends FSMSubsystem {
             NeutralModeValue.Brake,
             InvertedValue.Clockwise_Positive,
             null, null, null, null, null, null, null,
-             null, 
-             null, null, null
+            null, 
+            null, null, null
         );
     }
 
