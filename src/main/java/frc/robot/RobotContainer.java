@@ -16,6 +16,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,6 +49,7 @@ import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+@Logged
 public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
@@ -64,23 +67,28 @@ public class RobotContainer {
 
   private final LEDs s_Leds = new LEDs();
 
-  private final DigitalInput zeroSwitch = new DigitalInput(1);
+  public final DigitalInput zeroSwitch = new DigitalInput(1);
 
+  @Logged
   private final Trigger zeroSwitchTrigger;
 
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  private RobotMode currentMode = RobotMode.DRIVING;
-  private TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
+  public RobotMode currentMode = RobotMode.DRIVING;
+  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
 
   private final SendableChooser<Command> autoChooser;
 
+  @Logged
+  private int tempNum = 0;
+
   private SuperstructureStates elevatorState = SuperstructureStates.STOWED;
   private SuperstructureStates algaeRemovalState = SuperstructureStates.ALGAE_REMOVE_LVL2;
-  private Supplier<SuperstructureStates> elevatorStateSupplier = () -> elevatorState;
-  private Supplier<SuperstructureStates> algaeRemovalStateSupplier = () -> algaeRemovalState;
+
+  public Supplier<SuperstructureStates> elevatorStateSupplier = () -> elevatorState;
+  public Supplier<SuperstructureStates> algaeRemovalStateSupplier = () -> algaeRemovalState;
   //These  are used to set the elevator state based on the operator input
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -194,7 +202,7 @@ public class RobotContainer {
     driver.cross().whileTrue(
       Commands.sequence(
         Commands.deadline(
-          Commands.waitSeconds(2),
+          Commands.waitSeconds(0.9),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
           s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)
         ),

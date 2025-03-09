@@ -109,23 +109,23 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     *     used for estimation.
     */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-    Optional<EstimatedRobotPose> visionEst = Optional.empty();
-    for (var change : camera.getAllUnreadResults()) {
-        visionEst = photonEstimator.update(change);
-        updateEstimationStdDevs(visionEst, change.getTargets());
+        Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        for (var change : camera.getAllUnreadResults()) {
+            visionEst = photonEstimator.update(change);
+            updateEstimationStdDevs(visionEst, change.getTargets());
 
-        if (Robot.isSimulation()) {
-            visionEst.ifPresentOrElse(
-                    est ->
-                            getSimDebugField()
-                                    .getObject("VisionEstimation")
-                                    .setPose(est.estimatedPose.toPose2d()),
-                    () -> {
-                        getSimDebugField().getObject("VisionEstimation").setPoses();
-                    });
+            if (Robot.isSimulation()) {
+                visionEst.ifPresentOrElse(
+                        est ->
+                                getSimDebugField()
+                                        .getObject("VisionEstimation")
+                                        .setPose(est.estimatedPose.toPose2d()),
+                        () -> {
+                            getSimDebugField().getObject("VisionEstimation").setPoses();
+                        });
+            }
         }
-    }
-    return visionEst;
+        return visionEst;
     }
 
     /**
@@ -184,7 +184,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     * only be used when there are targets visible.
     */
     public Matrix<N3, N1> getEstimationStdDevs() {
-    return curStdDevs;
+        return curStdDevs;
     }
 
     // ----- Simulation

@@ -21,7 +21,7 @@ public class AlgaeIndexer extends FSMSubsystem {
     private static final int INDEXER_MOTOR_ID = 43; // Replace with actual ID
     //private static final int BEAM_BREAK_PORT = 0; // Replace with actual port
     private static final double INTAKE_VOLTAGE = 3.5; // Replace with actual voltage
-    private static final double OUTTAKE_VOLTAGE = -4; // Replace with actual voltage
+    private static final double OUTTAKE_VOLTAGE = -10.5; // Replace with actual voltage
 
     private TalonFX m_indexerMotor;
     //private DigitalInput m_beamBreak;
