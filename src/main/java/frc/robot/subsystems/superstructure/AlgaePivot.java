@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -28,9 +29,9 @@ public class AlgaePivot extends FSMSubsystem {
 // Constants
 private static final int ALGAE_PIVOT_ID = 42; // Replace with actual ID
 private static final double DOCKED_POSITION = 0.0; // Replace with actual docked position
-private static final double INTAKING_POSITION = 10.0; // Replace with actual extended position
-private static final double SCORING_POSITION = 20.0; // Replace with actual scoring position
-private static final double REMOVING_POSITION = 30.0; // Replace with actual removing position
+private static final double INTAKING_POSITION = 1; // Replace with actual extended position
+private static final double SCORING_POSITION = 2; // Replace with actual scoring position
+private static final double REMOVING_POSITION = 3; // Replace with actual removing position
 private static final double kP = 0.1;
 private static final double kI = 0.0;
 private static final double kD = 0.0;
@@ -39,13 +40,10 @@ private static final double kV = 0.12;
 private static final double kA = 0.0;
 private static final double kG = 0.0;
 private static final double MECHANISM_RATIO = 7/1;
-private static final double MM_ACCELERATION = 0;
-private static final double MM_CRUISE_VELOCITY = 0;
-private static final double MM_JERK = 0;
 private static final double POSITION_TOLERANCE = 0.1;
 
 private TalonFX m_algaePivot;
-private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
 private VoltageOut voltageOut = new VoltageOut(0);
 private NeutralModeValue currentNeutralMode = NeutralModeValue.Brake;
 
@@ -65,9 +63,7 @@ private void configureMotor() {
         InvertedValue.Clockwise_Positive,
         kP, kI, kD, kS, kV, kA, kG,
         MECHANISM_RATIO,
-        MM_ACCELERATION,
-        MM_CRUISE_VELOCITY,
-        MM_JERK
+        null, null, null
     );
 }
 
@@ -79,7 +75,7 @@ protected void executeCurrentStateBehavior() {
 
 private void setMotorPosition(double position) {
     if (m_algaePivot.isAlive()) {
-        m_algaePivot.setControl(motionMagicVoltage.withPosition(position));
+        m_algaePivot.setControl(positionVoltage.withPosition(position));
     }
 }
 

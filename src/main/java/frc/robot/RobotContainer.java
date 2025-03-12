@@ -77,7 +77,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public RobotMode currentMode = RobotMode.DRIVING;
-  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ALGAEINTAKE;
+  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -136,7 +136,8 @@ public class RobotContainer {
     zeroSwitchTrigger.onTrue(
       Commands.parallel(
         Commands.runOnce(() -> s_Superstructure.zeroSuperstructure()),
-        Commands.runOnce(() -> s_Leds.zeroed = true)
+        Commands.runOnce(() -> s_Leds.zeroed = true),
+        Commands.print("Got Switch")
       )
     );
 
@@ -202,7 +203,7 @@ public class RobotContainer {
     driver.cross().whileTrue(
       Commands.sequence(
         Commands.deadline(
-          Commands.waitSeconds(0.9),
+          Commands.waitSeconds(1.5),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
           s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)
         ),
@@ -222,6 +223,19 @@ public class RobotContainer {
         s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
       )
     );
+
+    driver.povUp().whileTrue(
+      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L1), ()->s_Elevator.stop(), s_Elevator)
+    );
+
+    driver.povLeft().whileTrue(
+      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L2), ()->s_Elevator.stop(), s_Elevator)
+    );
+
+    driver.povDown().whileTrue(
+      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L3), ()->s_Elevator.stop(), s_Elevator)
+    );
+
   }
 
   private void operatorBindings(){

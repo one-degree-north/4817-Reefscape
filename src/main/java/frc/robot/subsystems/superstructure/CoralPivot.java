@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -30,25 +31,22 @@ public class CoralPivot extends FSMSubsystem {
   //Constants
 
   private static final int CORAL_PIVOT_ID = 3;
-  private static final double kP = 0.1;
+  private static final double kP = 3.596;
   private static final double kI = 0.0;
   private static final double kD = 0.0;
   private static final double kS = 0.0;
-  private static final double kV = 0.12;
+  private static final double kV = 1.5681;
   private static final double kA = 0.0;
   private static final double kG = 0.0;
   private static final double CORAL_PIVOT_GEAR_RATIO = 12/1;
-  private static final double MM_ACCELERATION = 0;
-  private static final double MM_CRUISE_VELOCITY = 0;
-  private static final double MM_JERK = 0;
   private static final double CORAL_PIVOT_DOCKED_POS = 0.0;
-  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.0;
-  private static final double CORAL_PIVOT_REEF_POS = 0.0;
+  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 10.0;
+  private static final double CORAL_PIVOT_REEF_POS = 20.0;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivotMotor;
 
-  private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+  private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
   private VoltageOut voltageOut = new VoltageOut(0);
     
   private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
@@ -67,9 +65,7 @@ public class CoralPivot extends FSMSubsystem {
       InvertedValue.Clockwise_Positive, //CHECK
       kP, kI, kD, kS, kV, kA, kG,
       CORAL_PIVOT_GEAR_RATIO,
-      MM_ACCELERATION,
-      MM_CRUISE_VELOCITY,
-      MM_JERK
+      null, null, null
       );
   }
 
@@ -98,9 +94,9 @@ public class CoralPivot extends FSMSubsystem {
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
     new SysIdRoutine.Config(
-      Volts.of(0.5).per(Second), 
-      Volt.of(1.5), 
-      Time.ofBaseUnits(4, Seconds),
+      Volts.of(0.7).per(Second), 
+      Volt.of(0.5), 
+      Time.ofBaseUnits(5, Seconds),
       (state)-> SignalLogger.writeString("CoralPivotState", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
@@ -127,7 +123,7 @@ public class CoralPivot extends FSMSubsystem {
   @Override
   protected void executeCurrentStateBehavior() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
-    setControl(m_coralPivotMotor, motionMagicVoltage.withPosition(newState.getSetpointValue()));
+    setControl(m_coralPivotMotor, positionVoltage.withPosition(newState.getSetpointValue()));
   }
 
   @Override
