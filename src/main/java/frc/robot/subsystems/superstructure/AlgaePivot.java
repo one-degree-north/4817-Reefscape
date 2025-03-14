@@ -49,7 +49,7 @@ private static final double MECHANISM_RATIO = 7/1;
 private static final double POSITION_TOLERANCE = 0.05;
 
 private final Timer staticTimer = new Timer();
-private final double STATIC_TIME_SECS = 1.5;
+private final double STATIC_TIME_SECS = 0.5;
 private final double minVelocityThresh = 0.5;
 
 private AlgaePivotStates lastGoal = null;
@@ -121,7 +121,7 @@ protected void executeCurrentStateBehavior() {
     }
 
     if (!atGoal){
-        setMotorPosition(newState.getSetpointValue());
+        setMotorVoltage(newState.getSetpointValue());
     } else {
         stop();
     }
@@ -233,8 +233,8 @@ public void periodic() {
 }
 
 public enum AlgaePivotStates {
-    DOCKED(DOCKED_POSITION),
-    INTAKE(INTAKING_POSITION);
+    DOCKED(UPWARDS_VOLTAGE),
+    INTAKE(DOWNWARDS_VOLTAGE);
 
     private final double setpointValue;
 
