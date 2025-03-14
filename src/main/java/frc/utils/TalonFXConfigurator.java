@@ -2,6 +2,7 @@ package frc.utils;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -24,6 +25,7 @@ public class TalonFXConfigurator {
      * @param kV Velocity gain for feedforward control
      * @param kA Acceleration gain for feedforward control
      * @param kG Gravity gain for feedforward control
+     * @param gravityTypeValue Gravity type for feedforward control
      * @param sensorToMechanismRatio The ratio between the sensor and the mechanism
      * @param motionMagicAcceleration Motion Magic acceleration value
      * @param motionMagicCruiseVelocity Motion Magic cruise velocity value
@@ -34,6 +36,7 @@ public class TalonFXConfigurator {
             String motorType,
             NeutralModeValue neutralMode,
             InvertedValue inverted,
+            GravityTypeValue gravityTypeValue,
             Double kP,
             Double kI,
             Double kD,
@@ -74,7 +77,7 @@ public class TalonFXConfigurator {
         }
 
         // Configure PID gains if parameters are provided
-        if (kP != null || kI != null || kD != null || kS != null || kV != null || kA != null || kG != null) {
+        if (kP != null || kI != null || kD != null || kS != null || kV != null || kA != null || kG != null || gravityTypeValue != null) {
             Slot0Configs slot0 = new Slot0Configs();
             if (kP != null) slot0.withKP(kP);
             if (kI != null) slot0.withKI(kI);
@@ -83,6 +86,7 @@ public class TalonFXConfigurator {
             if (kV != null) slot0.withKV(kV);
             if (kA != null) slot0.withKA(kA);
             if (kG != null) slot0.withKG(kG);
+            if (gravityTypeValue != null) slot0.withGravityType(gravityTypeValue);
             config.withSlot0(slot0);
         }
 

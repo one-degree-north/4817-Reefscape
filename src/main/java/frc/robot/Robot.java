@@ -10,6 +10,7 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,7 +26,11 @@ import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  private final DigitalInput zeroSwitch = new DigitalInput(1);
+
   private final RobotContainer m_robotContainer;
+
+  private boolean haveReset = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -53,7 +58,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     SmartDashboard.putString("Elevator State", m_robotContainer.elevatorStateSupplier.get().toString());
     SmartDashboard.putString("Algae Removal State", m_robotContainer.algaeRemovalStateSupplier.get().toString());
-    SmartDashboard.putBoolean("ZeroSwitchOn", m_robotContainer.zeroSwitch.get());
+    SmartDashboard.putBoolean("ZeroSwitchOn", zeroSwitch.get());
 
     CommandScheduler.getInstance().run();
   }
@@ -63,7 +68,11 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (zeroSwitch.get() && haveReset == false) {
+      m_robotContainer.zeroAndToggleIdleModeAll();
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

@@ -28,9 +28,9 @@ public class AlgaeIntake extends FSMSubsystem {
     // Constants
     private static final int ALGAE_INTAKE_MASTER_ID = 41; // Replace with actual ID
     private static final int ALGAE_INTAKE_SLAVE_ID = -1; // Replace with actual ID or -1 if no follower
-    private static final double INTAKE_VOLTAGE = 1.5; // Voltage for intake
+    private static final double INTAKE_VOLTAGE = 3; // Voltage for intake
     private static final double OUTTAKE_VOLTAGE = -INTAKE_VOLTAGE; // Voltage for outtake
-    private static final double SHOOT_RPM = 5000.0; // RPM for shooting
+    private static final double SHOOT_RPM = 5200.0; // RPM for shooting
     private static final double RPM_TOLERANCE = 50.0; // Tolerance for reaching desired RPM
 
     private TalonFX m_algaeIntakeMaster;
@@ -54,7 +54,7 @@ public class AlgaeIntake extends FSMSubsystem {
             "Falcon500",
             NeutralModeValue.Brake,
             InvertedValue.CounterClockwise_Positive,
-            0.23861, null, null, 0.061375, 0.16521, 0.0028082, null, 1.2/1, null, null, null
+            null, 0.19476, null, null, 0.031339, 0.13479, 0.0077527, null, 1.2/1, null, null, null
         );
 
         if (hasFollower && m_algaeIntakeSlave != null) {
@@ -63,7 +63,7 @@ public class AlgaeIntake extends FSMSubsystem {
                 "Falcon500",
                 NeutralModeValue.Brake,
                 InvertedValue.Clockwise_Positive,
-                null, null, null, null, null, null, null, 1.2/1, null, null, null
+                null, null, null, null, null, null, null, null, null, null, null, null
             );
 
             // Set the follower motor to follow the primary motor

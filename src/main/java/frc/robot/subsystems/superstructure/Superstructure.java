@@ -36,7 +36,8 @@ public class Superstructure extends FSMSubsystem {
         return Commands.parallel(
             Commands.runOnce(()-> s_algaePivot.zeroAndToggleIdleMode(), s_algaePivot),
             Commands.runOnce(()-> s_coralPivot.zeroAndToggleIdleMode(), s_coralPivot),
-            Commands.runOnce(()-> s_elevator.zeroAndToggleIdleMode(), s_elevator)
+            Commands.runOnce(()-> s_elevator.zeroAndToggleIdleMode(), s_elevator),
+            Commands.print("Zeroing Superstructure")
         );
     }
 
@@ -47,7 +48,7 @@ public class Superstructure extends FSMSubsystem {
             case ALGAE_EXTENDED:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaePivotStates.INTAKING);
+                        AlgaePivot.AlgaePivotStates.INTAKE);
                 s_coralPivot
                     .setGoal(
                         CoralPivot.CoralPivotStates.DOCKED);
@@ -124,10 +125,10 @@ public class Superstructure extends FSMSubsystem {
             case ALGAE_REMOVE_LVL2:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaePivotStates.REMOVING);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
-                        CoralPivot.CoralPivotStates.DOCKED);
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
                     .setGoal(
                         Elevator.ElevatorStates.L2);
@@ -135,10 +136,10 @@ public class Superstructure extends FSMSubsystem {
             case ALGAE_REMOVE_LVL3:
                 s_algaePivot
                     .setGoal(
-                        AlgaePivot.AlgaePivotStates.REMOVING);
+                        AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
-                        CoralPivot.CoralPivotStates.DOCKED);
+                        CoralPivot.CoralPivotStates.REEF);
                 s_elevator
                     .setGoal(
                         Elevator.ElevatorStates.L3);

@@ -30,7 +30,9 @@ public abstract class FSMSubsystem extends SubsystemBase {
         } else if (currentState != desiredState) {
             handleStateTransition();
             executeCurrentStateBehavior();
+            
         }
+        
     }
 
     @Deprecated

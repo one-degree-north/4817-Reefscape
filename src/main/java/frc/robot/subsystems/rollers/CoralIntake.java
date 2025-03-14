@@ -39,14 +39,14 @@ public class CoralIntake extends FSMSubsystem {
         "Falcon500",
         NeutralModeValue.Coast,
         InvertedValue.CounterClockwise_Positive,
-        null, null, null, null, null, null, null, null, null, null, null
+        null, null, null, null, null, null, null, null, null, null, null, null
     );
     TalonFXConfigurator.configureTalonFX(
         m_rightRoller,
         "Falcon500",
         NeutralModeValue.Coast,
         InvertedValue.Clockwise_Positive,
-        null, null, null, null, null, null, null, null, null, null, null
+        null, null, null, null, null, null, null, null, null, null, null, null
     );
   }
 

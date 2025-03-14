@@ -18,12 +18,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.PhotonVisionCommand;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
@@ -67,17 +65,12 @@ public class RobotContainer {
 
   private final LEDs s_Leds = new LEDs();
 
-  public final DigitalInput zeroSwitch = new DigitalInput(1);
-
-  @Logged
-  private final Trigger zeroSwitchTrigger;
-
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public RobotMode currentMode = RobotMode.DRIVING;
-  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
+  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.SWERVE;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -101,7 +94,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    zeroSwitchTrigger = new Trigger(() -> zeroSwitch.get());
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
     visionCommand.schedule();
     registerStatesNamedCommands();
@@ -131,16 +123,14 @@ public class RobotContainer {
       s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE));
   }
 
-  private void driverBindings() {
-    //ZeroSwitch Binding
-    zeroSwitchTrigger.onTrue(
-      Commands.parallel(
-        Commands.runOnce(() -> s_Superstructure.zeroSuperstructure()),
-        Commands.runOnce(() -> s_Leds.zeroed = true),
-        Commands.print("Got Switch")
-      )
-    );
+  public void zeroAndToggleIdleModeAll(){
+    s_AlgaePivot.zeroAndToggleIdleMode();
+    s_CoralPivot.zeroAndToggleIdleMode();
+    s_Elevator.zeroAndToggleIdleMode();
+    s_Leds.zeroed = true;
+  }
 
+  private void driverBindings() {
     drivetrain.setDefaultCommand(
       drivetrain.applyRequest(() ->
           drive.withVelocityX(-driver.getLeftY() * MaxSpeed)
@@ -161,19 +151,19 @@ public class RobotContainer {
     );
 
     //ALGAE SHOOT
-    driver.L2().whileTrue(
-      Commands.sequence(
-        Commands.deadline(
-          Commands.waitUntil(() -> driver.getL2Axis() > 0.9),
-          s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
-          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
-        Commands.parallel(
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
-        )
-      )
-    );
+    // driver.L2().whileTrue(
+    //   Commands.sequence(
+    //     Commands.deadline(
+    //       Commands.waitUntil(() -> driver.getL2Axis() > 0.9),
+    //       s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
+    //       s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
+    //       s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
+    //     Commands.parallel(
+    //       s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
+    //       s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
+    //     )
+    //   )
+    // );
 
     //REMOVE ALGAE FROM REEF
     driver.R1().whileTrue(
@@ -199,43 +189,66 @@ public class RobotContainer {
       )
     );
 
-    //SHOOT ALGAE (NO PIVOT)
+    // SHOOT ALGAE (JUST PIVOT)
     driver.cross().whileTrue(
       Commands.sequence(
         Commands.deadline(
-          Commands.waitSeconds(1.5),
+          Commands.waitSeconds(0.7),
+          Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
+          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)
-        ),
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
         Commands.parallel(
           s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT)
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
         )
-        
       )
     );
 
     //INTAKE ALGAE
     driver.square().whileTrue(
       Commands.parallel(
-        //s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
+        Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
+          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
         s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
         s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
       )
     );
 
+    // driver.povUp().whileTrue(
+    //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L1), 
+    //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
+    // );
+
+    // driver.povLeft().whileTrue(
+    //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L2), 
+    //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
+    // );
+
+    // driver.povDown().whileTrue(
+    //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L3), 
+    //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
+    // );
+
+    // driver.povRight().whileTrue(
+    //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L4), 
+    //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
+    // );
+
     driver.povUp().whileTrue(
-      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L1), ()->s_Elevator.stop(), s_Elevator)
+      Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.HUMAN_PLAYER), 
+      ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
     );
 
     driver.povLeft().whileTrue(
-      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L2), ()->s_Elevator.stop(), s_Elevator)
+      Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.REEF), 
+      ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
     );
-
-    driver.povDown().whileTrue(
-      Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L3), ()->s_Elevator.stop(), s_Elevator)
-    );
-
+    
+    // driver.povUp().whileTrue(
+    //   Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
+    //   ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot)
+    // );
   }
 
   private void operatorBindings(){

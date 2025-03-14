@@ -15,6 +15,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -30,21 +31,21 @@ import frc.utils.TalonFXConfigurator;
 public class CoralPivot extends FSMSubsystem {
   //Constants
 
-  private static final int CORAL_PIVOT_ID = 3;
-  private static final double kP = 3.596;
+  private static final int CORAL_PIVOT_MASTER_ID = 3;
+  private static final double kP = 52.785;
   private static final double kI = 0.0;
-  private static final double kD = 0.0;
-  private static final double kS = 0.0;
-  private static final double kV = 1.5681;
-  private static final double kA = 0.0;
-  private static final double kG = 0.0;
+  private static final double kD = 4.8184;
+  private static final double kS = 0.43911;
+  private static final double kV = 0.16258;
+  private static final double kA = 0.23183;
+  private static final double kG = 0.69136;
   private static final double CORAL_PIVOT_GEAR_RATIO = 12/1;
-  private static final double CORAL_PIVOT_DOCKED_POS = 0.0;
-  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 10.0;
-  private static final double CORAL_PIVOT_REEF_POS = 20.0;
+  private static final double CORAL_PIVOT_DOCKED_POS = -0.10345;
+  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.17;
+  private static final double CORAL_PIVOT_REEF_POS = 0.3;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
-  private TalonFX m_coralPivotMotor;
+  private TalonFX m_coralPivot;
 
   private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
   private VoltageOut voltageOut = new VoltageOut(0);
@@ -53,17 +54,17 @@ public class CoralPivot extends FSMSubsystem {
 
   public CoralPivot() {
     setName("Coral Pivot");
-    m_coralPivotMotor = new TalonFX(CORAL_PIVOT_ID, "rio");
+    m_coralPivot = new TalonFX(CORAL_PIVOT_MASTER_ID, "rio");
     motorConfigurations();
   }
 
   private void motorConfigurations() {
     TalonFXConfigurator.configureTalonFX(
-      m_coralPivotMotor,
-      "KrakenX60",
+      m_coralPivot,
+      "Falcon500",
       m_currentNeutralMode,
       InvertedValue.Clockwise_Positive, //CHECK
-      kP, kI, kD, kS, kV, kA, kG,
+      GravityTypeValue.Arm_Cosine, kP, kI, kD, kS, kV, kA, kG,
       CORAL_PIVOT_GEAR_RATIO,
       null, null, null
       );
@@ -76,7 +77,7 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   private void resetCoralPivotPosition() {
-    m_coralPivotMotor.setPosition(0);
+    m_coralPivot.setPosition(CORAL_PIVOT_DOCKED_POS);
   }
 
   private void toggleIdleMode(){
@@ -94,13 +95,13 @@ public class CoralPivot extends FSMSubsystem {
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
     new SysIdRoutine.Config(
-      Volts.of(0.7).per(Second), 
-      Volt.of(0.5), 
+      Volts.of(0.4).per(Second), 
+      Volt.of(1), 
       Time.ofBaseUnits(5, Seconds),
       (state)-> SignalLogger.writeString("CoralPivotState", state.toString())),
     new SysIdRoutine.Mechanism(
         (Voltage volts) -> {
-          m_coralPivotMotor.setControl(voltageOut.withOutput(volts));
+          m_coralPivot.setControl(voltageOut.withOutput(volts));
         },
         null,
         this
@@ -116,19 +117,19 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   public boolean atGoal() {
-    return Math.abs(m_coralPivotMotor.getPosition().getValueAsDouble() - 
+    return Math.abs(m_coralPivot.getPosition().getValueAsDouble() - 
         ((CoralPivotStates)getDesiredState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
   }
 
   @Override
   protected void executeCurrentStateBehavior() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
-    setControl(m_coralPivotMotor, positionVoltage.withPosition(newState.getSetpointValue()));
+    setControl(m_coralPivot, positionVoltage.withPosition(newState.getSetpointValue()));
   }
 
   @Override
   public void stop() {
-    m_coralPivotMotor.stopMotor();
+    m_coralPivot.stopMotor();
   }
 
   @Override
@@ -156,7 +157,7 @@ public class CoralPivot extends FSMSubsystem {
     update();
 
     SmartDashboard.putString("Coral Pivot State", getCurrentState().toString());
-    SmartDashboard.putNumber("Coral Pivot Position", m_coralPivotMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Coral Pivot Position", m_coralPivot.getPosition().getValueAsDouble());
     SmartDashboard.putBoolean("Coral Pivot AtGoal?", atGoal());
   }
 

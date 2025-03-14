@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -31,24 +32,24 @@ public class Elevator extends FSMSubsystem {
     private static final int ELEVATOR_MASTER_ID = 2;
     private static final int ELEVATOR_SLAVE_ID = 1;
     private static final int MAGNETIC_LIMIT_SWITCH_ID = 2;
-    private static final double kP = 72.931;
+    private static final double kP = 64.584;
     private static final double kI = 0.0;
-    private static final double kD = 7.4701;
-    private static final double kS = 0.05589;
-    private static final double kV = 4.4505;
-    private static final double kA = 0.046201;
-    private static final double kG = 0.060326;
+    private static final double kD = 6.2334;
+    private static final double kS = 0.054586;
+    private static final double kV = 4.4516;
+    private static final double kA = 0.057628;
+    private static final double kG = 0.07;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
-    private static final double ELEVATOR_DOCKED_POS = 0.0;
+    private static final double ELEVATOR_DOCKED_POS = 0.1;
     private static final double ELEVATOR_L1_POS = 1;
-    private static final double ELEVATOR_L2_POS = 2;
-    private static final double ELEVATOR_L3_POS = 3;
-    private static final double ELEVATOR_L4_POS = 4;
+    private static final double ELEVATOR_L2_POS = 2.5;
+    private static final double ELEVATOR_L3_POS = 3.5;
+    private static final double ELEVATOR_L4_POS = 6;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
     private static final double ELEVATOR_HP_POS = 5;
 
-    private TalonFX m_elevatorMasterMotor;
-    private TalonFX m_elevatorSlaveMotor;
+    private TalonFX m_elevatorMaster;
+    private TalonFX m_elevatorSlave;
     private DigitalInput m_bottomLimitSwitch;
 
     private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
@@ -58,35 +59,35 @@ public class Elevator extends FSMSubsystem {
     
     public Elevator() {
         setName("Elevator");
-        m_elevatorMasterMotor = new TalonFX(ELEVATOR_MASTER_ID, "rio");
-        m_elevatorSlaveMotor = new TalonFX(ELEVATOR_SLAVE_ID, "rio");
+        m_elevatorMaster = new TalonFX(ELEVATOR_MASTER_ID, "rio");
+        m_elevatorSlave = new TalonFX(ELEVATOR_SLAVE_ID, "rio");
         m_bottomLimitSwitch = new DigitalInput(MAGNETIC_LIMIT_SWITCH_ID);
         motorConfigurations();
     }
 
     private void motorConfigurations() {
         TalonFXConfigurator.configureTalonFX(
-            m_elevatorMasterMotor,
+            m_elevatorMaster,
             "KrakenX60",
             m_currentNeutralMode,
             InvertedValue.Clockwise_Positive,
-            kP, kI, kD, kS, kV, kA, kG,
+            GravityTypeValue.Elevator_Static, kP, kI, kD, kS, kV, kA, kG,
             ELEVATOR_GEAR_RATIO,
             null,null, null
         );
 
         TalonFXConfigurator.configureTalonFX(
-            m_elevatorSlaveMotor,
+            m_elevatorSlave,
             "KrakenX60",
             m_currentNeutralMode,
             InvertedValue.Clockwise_Positive,
             null, null, null, null, null, null, null,
             null, 
-            null, null, null
+            null, null, null, null
         );
 
-        Follower followerConfig = new Follower(m_elevatorMasterMotor.getDeviceID(), false);
-        m_elevatorSlaveMotor.setControl(followerConfig);
+        Follower followerConfig = new Follower(m_elevatorMaster.getDeviceID(), false);
+        m_elevatorSlave.setControl(followerConfig);
     }
 
     public boolean isElevatorDown() {
@@ -100,8 +101,8 @@ public class Elevator extends FSMSubsystem {
     }
 
     private void resetElevatorPosition() {
-        m_elevatorMasterMotor.setPosition(0);
-        m_elevatorSlaveMotor.setPosition(0);
+        m_elevatorMaster.setPosition(0);
+        m_elevatorSlave.setPosition(0);
         System.err.println("Elevator position reset");
     }
 
@@ -125,7 +126,7 @@ public class Elevator extends FSMSubsystem {
             (state)-> SignalLogger.writeString("ElevatorState", state.toString())),
         new SysIdRoutine.Mechanism(
             (Voltage volts) -> {
-                m_elevatorMasterMotor.setControl(voltageOut.withOutput(volts));
+                m_elevatorMaster.setControl(voltageOut.withOutput(volts));
             },
             null,
             this
@@ -141,20 +142,20 @@ public class Elevator extends FSMSubsystem {
     }
 
     public boolean atGoal() {
-        return Math.abs(m_elevatorMasterMotor.getPosition().getValueAsDouble() - 
+        return Math.abs(m_elevatorMaster.getPosition().getValueAsDouble() - 
             ((ElevatorStates)getCurrentState()).getSetpointValue()) < ELEVATOR_ALLOWED_ERROR;
     }
 
     @Override
     protected void executeCurrentStateBehavior() {
         ElevatorStates newState = (ElevatorStates)getCurrentState();
-        setControl(m_elevatorMasterMotor, 
+        setControl(m_elevatorMaster, 
             positionVoltage.withPosition(newState.getSetpointValue()));
     }
 
     @Override
     public void stop() {
-        m_elevatorMasterMotor.stopMotor();
+        m_elevatorMaster.stopMotor();
     }
 
     @Override
@@ -182,9 +183,10 @@ public class Elevator extends FSMSubsystem {
         update();
 
         SmartDashboard.putString("Elevator State", getCurrentState().toString());
-        SmartDashboard.putNumber("Elevator Position", m_elevatorMasterMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator Position", m_elevatorMaster.getPosition().getValueAsDouble());
         SmartDashboard.putBoolean("Is Elevator Down", isElevatorDown());
         SmartDashboard.putBoolean("Is Elevator AtGoal?", atGoal());
+        SmartDashboard.putNumber("Elevator Supplied Voltage", m_elevatorMaster.getMotorVoltage().getValueAsDouble());
     }
 
     public enum ElevatorStates {
