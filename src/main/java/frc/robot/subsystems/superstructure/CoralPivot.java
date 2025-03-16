@@ -32,17 +32,17 @@ public class CoralPivot extends FSMSubsystem {
   //Constants
 
   private static final int CORAL_PIVOT_MASTER_ID = 3;
-  private static final double kP = 52.785;
+  private static final double kP = 29.729;
   private static final double kI = 0.0;
-  private static final double kD = 4.8184;
-  private static final double kS = 0.43911;
-  private static final double kV = 0.16258;
-  private static final double kA = 0.23183;
-  private static final double kG = 0.69136;
-  private static final double CORAL_PIVOT_GEAR_RATIO = 12/1;
-  private static final double CORAL_PIVOT_DOCKED_POS = -0.10345;
-  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.17;
-  private static final double CORAL_PIVOT_REEF_POS = 0.3;
+  private static final double kD = 1.5852;
+  private static final double kS = 0.30161;
+  private static final double kV = 2.847;
+  private static final double kA = 0.084136;
+  private static final double kG = 0.37407;
+  private static final double CORAL_PIVOT_GEAR_RATIO = 36/1;
+  private static final double CORAL_PIVOT_DOCKED_POS = 0.15;
+  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.15;
+  private static final double CORAL_PIVOT_REEF_POS = -0.15;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivot;
@@ -77,7 +77,7 @@ public class CoralPivot extends FSMSubsystem {
   }
 
   private void resetCoralPivotPosition() {
-    m_coralPivot.setPosition(CORAL_PIVOT_DOCKED_POS);
+    m_coralPivot.setPosition(0);
   }
 
   private void toggleIdleMode(){
@@ -95,8 +95,8 @@ public class CoralPivot extends FSMSubsystem {
 
   private final SysIdRoutine coralPivotCharacterization = new SysIdRoutine(
     new SysIdRoutine.Config(
-      Volts.of(0.4).per(Second), 
-      Volt.of(1), 
+      Volts.of(0.7).per(Second), 
+      Volt.of(1.1), 
       Time.ofBaseUnits(5, Seconds),
       (state)-> SignalLogger.writeString("CoralPivotState", state.toString())),
     new SysIdRoutine.Mechanism(

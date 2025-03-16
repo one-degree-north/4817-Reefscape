@@ -59,7 +59,7 @@ public class TalonFXConfigurator {
             config.withCurrentLimits(currentLimits);
         } else if ("Falcon500".equalsIgnoreCase(motorType)) {
             CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs()
-                    .withStatorCurrentLimit(60)
+                    .withStatorCurrentLimit(30)
                     .withStatorCurrentLimitEnable(true);
             config.withCurrentLimits(currentLimits);
         }

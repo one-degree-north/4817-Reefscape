@@ -12,9 +12,11 @@ import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 
 /**
@@ -29,9 +31,9 @@ public class Robot extends TimedRobot {
   private final DigitalInput zeroSwitch = new DigitalInput(1);
 
   private final RobotContainer m_robotContainer;
+  private final Field2d m_field = new Field2d();
 
   private boolean haveReset = false;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -39,6 +41,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    
     m_robotContainer = new RobotContainer();
     Epilogue.bind(this);
   }
@@ -59,8 +62,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Elevator State", m_robotContainer.elevatorStateSupplier.get().toString());
     SmartDashboard.putString("Algae Removal State", m_robotContainer.algaeRemovalStateSupplier.get().toString());
     SmartDashboard.putBoolean("ZeroSwitchOn", zeroSwitch.get());
-
+    SmartDashboard.putData("Field", m_field);
     CommandScheduler.getInstance().run();
+    m_field.setRobotPose(m_robotContainer.drivetrain.getState().Pose);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

@@ -32,13 +32,13 @@ public class Elevator extends FSMSubsystem {
     private static final int ELEVATOR_MASTER_ID = 2;
     private static final int ELEVATOR_SLAVE_ID = 1;
     private static final int MAGNETIC_LIMIT_SWITCH_ID = 2;
-    private static final double kP = 64.584;
+    private static final double kP = 66.949;
     private static final double kI = 0.0;
-    private static final double kD = 6.2334;
-    private static final double kS = 0.054586;
-    private static final double kV = 4.4516;
-    private static final double kA = 0.057628;
-    private static final double kG = 0.07;
+    private static final double kD = 7.3359;
+    private static final double kS = 0.10612;
+    private static final double kV = 4.6856;
+    private static final double kA = 0.08795;
+    private static final double kG = 0.18182;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
     private static final double ELEVATOR_DOCKED_POS = 0.1;
     private static final double ELEVATOR_L1_POS = 1;
@@ -46,7 +46,7 @@ public class Elevator extends FSMSubsystem {
     private static final double ELEVATOR_L3_POS = 3.5;
     private static final double ELEVATOR_L4_POS = 6;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
-    private static final double ELEVATOR_HP_POS = 5;
+    private static final double ELEVATOR_HP_POS = 1;
 
     private TalonFX m_elevatorMaster;
     private TalonFX m_elevatorSlave;

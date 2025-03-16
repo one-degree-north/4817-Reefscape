@@ -62,40 +62,41 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     private VisionSystemSim visionSim;
 
     public static final Transform3d kRobotToCam =
-        new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+        new Transform3d(new Translation3d(2.903, -1.253, 31.549), new Rotation3d(0, 0.52, 0));
+        //this is in inches
     
     private AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
 
     public Vision() {
-    camera = new PhotonCamera("Winston4817");
+        camera = new PhotonCamera("Winston4817");
 
-    photonEstimator =
-            new PhotonPoseEstimator(kFieldLayout, 
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
-    photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimator =
+                new PhotonPoseEstimator(kFieldLayout, 
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
+        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
-    // ----- Simulation
-    if (Robot.isSimulation()) {
-        // Create the vision system simulation which handles cameras and targets on the field.
-        visionSim = new VisionSystemSim("main");
-        // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
-        visionSim.addAprilTags(kFieldLayout);
-        // Create simulated camera properties. These can be set to mimic your actual camera.
-        var cameraProp = new SimCameraProperties();
-        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
-        cameraProp.setCalibError(0.35, 0.10);
-        cameraProp.setFPS(15);
-        cameraProp.setAvgLatencyMs(50);
-        cameraProp.setLatencyStdDevMs(15);
-        // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
-        // targets.
-        cameraSim = new PhotonCameraSim(camera, cameraProp);
-        // Add the simulated camera to view the targets on this simulated field.
-        visionSim.addCamera(cameraSim, kRobotToCam);
+        // ----- Simulation
+        if (Robot.isSimulation()) {
+            // Create the vision system simulation which handles cameras and targets on the field.
+            visionSim = new VisionSystemSim("main");
+            // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
+            visionSim.addAprilTags(kFieldLayout);
+            // Create simulated camera properties. These can be set to mimic your actual camera.
+            var cameraProp = new SimCameraProperties();
+            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+            cameraProp.setCalibError(0.35, 0.10);
+            cameraProp.setFPS(15);
+            cameraProp.setAvgLatencyMs(50);
+            cameraProp.setLatencyStdDevMs(15);
+            // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
+            // targets.
+            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            // Add the simulated camera to view the targets on this simulated field.
+            visionSim.addCamera(cameraSim, kRobotToCam);
 
-        cameraSim.enableDrawWireframe(true);
-    }
+            cameraSim.enableDrawWireframe(true);
+        }
     }
 
     /**

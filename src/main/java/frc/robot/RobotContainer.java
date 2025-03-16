@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -49,7 +50,7 @@ import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
  */
 @Logged
 public class RobotContainer {
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final CommandPS5Controller driver = new CommandPS5Controller(0);
   private final CommandPS5Controller operator = new CommandPS5Controller(1);
@@ -70,7 +71,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public RobotMode currentMode = RobotMode.DRIVING;
-  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.SWERVE;
+  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -85,12 +86,14 @@ public class RobotContainer {
   //These  are used to set the elevator state based on the operator input
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+    .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.RobotCentricFacingAngle resetHeading = new SwerveRequest.RobotCentricFacingAngle()
+    .withTargetDirection(Rotation2d.kZero);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -104,6 +107,7 @@ public class RobotContainer {
       case TUNING:
         tuningBindings();
         break;
+        
     }
     //operatorBindings();
   }
@@ -138,6 +142,12 @@ public class RobotContainer {
               .withRotationalRate(-driver.getRightX() * MaxAngularRate)
       )
     );
+
+    // driver.touchpad().onTrue(
+    //   drivetrain.applyRequest(()->
+    //     resetHeading
+    //   )
+    // );
 
     //CORAL SCORING
     driver.R2().whileTrue(
@@ -193,12 +203,14 @@ public class RobotContainer {
     driver.cross().whileTrue(
       Commands.sequence(
         Commands.deadline(
-          Commands.waitSeconds(0.7),
+          Commands.waitSeconds(0.9),
           Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
           ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
           s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
         Commands.parallel(
+          Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
+          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
           s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
           s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
         )
@@ -212,6 +224,14 @@ public class RobotContainer {
           ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
         s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
         s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
+      )
+    );
+
+    //Just Elevator and Coral Pivot Reef
+    driver.L1().whileTrue(
+      Commands.deadline(
+        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
       )
     );
 
@@ -230,20 +250,20 @@ public class RobotContainer {
     //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
     // );
 
-    // driver.povRight().whileTrue(
+    // driver.povRight().whileTrue  (
     //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L4), 
     //   ()->s_Elevator.setGoal(ElevatorStates.DOCKED), s_Elevator)
     // );
 
-    driver.povUp().whileTrue(
-      Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.HUMAN_PLAYER), 
-      ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
-    );
+    // driver.povUp().whileTrue(
+    //   Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.HUMAN_PLAYER), 
+    //   ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
+    // );
 
-    driver.povLeft().whileTrue(
-      Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.REEF), 
-      ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
-    );
+    // driver.povLeft().whileTrue(
+    //   Commands.startEnd(()-> s_CoralPivot.setGoal(CoralPivotStates.REEF), 
+    //   ()->s_CoralPivot.setGoal(CoralPivotStates.DOCKED), s_CoralPivot)
+    // );
     
     // driver.povUp().whileTrue(
     //   Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
@@ -49,11 +50,11 @@ private static final double MECHANISM_RATIO = 7/1;
 private static final double POSITION_TOLERANCE = 0.05;
 
 private final Timer staticTimer = new Timer();
-private final double STATIC_TIME_SECS = 0.5;
+private final double STATIC_TIME_SECS = 0.7;
 private final double minVelocityThresh = 0.5;
 
 private AlgaePivotStates lastGoal = null;
-private boolean atGoal = false;
+private boolean slammed = false;
 
 private TalonFX m_algaePivotMaster;
 private TalonFX m_algaePivotSlave;
@@ -97,43 +98,6 @@ private void configureMotor() {
 @Override
 protected void executeCurrentStateBehavior() {
     //6328 GenericSlamElevator 
-    AlgaePivotStates newState = (AlgaePivotStates)getCurrentState();
-    
-    if (newState != lastGoal) {
-        staticTimer.stop();
-        staticTimer.reset();
-    }
-
-    lastGoal = newState;
-
-    if (!atGoal){
-        if(Math.abs(getVelocityRads()) <= minVelocityThresh){
-            staticTimer.start();
-        } else{
-            staticTimer.stop();
-            staticTimer.reset();
-        }
-
-        atGoal = staticTimer.hasElapsed(STATIC_TIME_SECS);
-    } else {
-        staticTimer.stop();
-        staticTimer.reset();
-    }
-
-    if (!atGoal){
-        setMotorVoltage(newState.getSetpointValue());
-    } else {
-        stop();
-    }
-
-    if (DriverStation.isDisabled()){
-        lastGoal = null;
-        staticTimer.stop();
-        staticTimer.reset();
-        if (Math.abs(getVelocityRads())>minVelocityThresh){
-            atGoal = false;
-        }
-    }
 }
 
 private void setMotorPosition(double position) {
@@ -225,11 +189,55 @@ public Enum<?> getDesiredState() {
 }
 
 @Override
-public void periodic() {
-    update(); // Call the FSMSubsystem's update method
+public void periodic() { 
+    // Call the FSMSubsystem's update method
+    update();
+    AlgaePivotStates newState = (AlgaePivotStates)getCurrentState();
+    
+    if (newState != lastGoal) {
+        slammed = false;
+        staticTimer.stop();
+        staticTimer.reset();
+    }
+
+    lastGoal = newState;
+
+    if (!slammed) {
+        // Start static timer if within min velocity threshold.
+        if (Math.abs(getVelocityRads()) <= minVelocityThresh) {
+          staticTimer.start();
+        } else {
+          staticTimer.stop();
+          staticTimer.reset();
+        }
+        // If we are finished with timer, finish goal.
+        // Also assume we are at the goal if auto was started
+        slammed = staticTimer.hasElapsed(STATIC_TIME_SECS) || DriverStation.isAutonomousEnabled();
+      } else {
+        staticTimer.stop();
+        staticTimer.reset();
+      }
+    
+    if (!slammed) {
+        setMotorVoltage(newState.getSetpointValue());
+        } else {
+            stop();
+    }
+
+    if (DriverStation.isDisabled()){
+        lastGoal = null;
+        staticTimer.stop();
+        staticTimer.reset();
+        if (Math.abs(getVelocityRads())>minVelocityThresh){
+            slammed = false;
+        }
+    }
     SmartDashboard.putString("Algae Pivot State", getCurrentState().toString());
     SmartDashboard.putNumber("Algae Pivot Position", m_algaePivotMaster.getPosition().getValueAsDouble());
     SmartDashboard.putString("Algae Pivot NeutralMode", currentNeutralMode.toString());
+    SmartDashboard.putBoolean("Alage Pivot Slammed?", slammed);
+    SmartDashboard.putNumber("Static Timer Elapsed", staticTimer.get());
+    SmartDashboard.putNumber("Algae Pivot rads", Math.abs(getVelocityRads()));
 }
 
 public enum AlgaePivotStates {
