@@ -18,6 +18,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,6 +43,7 @@ import frc.robot.subsystems.superstructure.Elevator;
 import frc.robot.subsystems.superstructure.Elevator.ElevatorStates;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
+import frc.robot.subsystems.vision.PhotonRunnable;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,7 +54,7 @@ import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 @Logged
 public class RobotContainer {
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-  private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
+  // private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final CommandPS5Controller driver = new CommandPS5Controller(0);
   private final CommandPS5Controller operator = new CommandPS5Controller(1);
 
@@ -81,6 +85,13 @@ public class RobotContainer {
   public Supplier<SuperstructureStates> algaeRemovalStateSupplier = () -> algaeRemovalState;
   //These  are used to set the elevator state based on the operator input
 
+  //Camera Constants
+  public static final Transform3d[] kRobotToCam =
+    new Transform3d[]{
+      new Transform3d(new Translation3d(2.903, -1.253, 31.549), 
+      new Rotation3d(0, 0.52, 0))};
+  private static final String[] kCameraName = new String[] {"Winston4817"};
+
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
     .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
     .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -92,7 +103,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
-    visionCommand.schedule();
+    //visionCommand.schedule();
     registerStatesNamedCommands();
     switch(currentMode){
       case DRIVING:
@@ -104,7 +115,19 @@ public class RobotContainer {
         
     }
     //operatorBindings();
+
+    photonThread.setName("PhotonVision");
+    photonThread.setDaemon(true);
+    photonThread.start();
   }
+
+  private final Thread photonThread = new Thread(
+    new PhotonRunnable(
+        kCameraName,
+        kRobotToCam,
+        drivetrain::addVisionMeasurement,
+        () -> drivetrain.getState().Pose)
+  );
 
   private void registerStatesNamedCommands(){
     s_Elevator.registerState(ElevatorStates.DOCKED);

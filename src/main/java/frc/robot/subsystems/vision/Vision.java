@@ -74,7 +74,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
         photonEstimator =
                 new PhotonPoseEstimator(kFieldLayout, 
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
-        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.AVERAGE_BEST_TARGETS);
 
         // ----- Simulation
         if (Robot.isSimulation()) {
@@ -86,7 +86,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
             var cameraProp = new SimCameraProperties();
             cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
             cameraProp.setCalibError(0.35, 0.10);
-            cameraProp.setFPS(15);
+            cameraProp.setFPS(45);
             cameraProp.setAvgLatencyMs(50);
             cameraProp.setLatencyStdDevMs(15);
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
@@ -203,5 +203,5 @@ import org.photonvision.targeting.PhotonTrackedTarget;
     public Field2d getSimDebugField() {
         if (!Robot.isSimulation()) return null;
             return visionSim.getDebugField();
-    }
+        }
     }

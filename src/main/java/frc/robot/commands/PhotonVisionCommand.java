@@ -8,6 +8,7 @@ package frc.robot.commands;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConsumer;
 
@@ -30,6 +31,7 @@ public class PhotonVisionCommand extends Command {
 
   @Override
   public void execute() {
+    Commands.print("Vision Command Running");
     var visionEst = visions.getEstimatedGlobalPose();
     visionEst.ifPresent(est -> {
     // Change our trust in the measurement based on the tags we can see
