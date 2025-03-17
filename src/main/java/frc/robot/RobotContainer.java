@@ -18,7 +18,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -75,10 +74,7 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  @Logged
-  private int tempNum = 0;
-
-  private SuperstructureStates elevatorState = SuperstructureStates.STOWED;
+  private SuperstructureStates elevatorState = SuperstructureStates.CORAL_LVL2;
   private SuperstructureStates algaeRemovalState = SuperstructureStates.ALGAE_REMOVE_LVL2;
 
   public Supplier<SuperstructureStates> elevatorStateSupplier = () -> elevatorState;
@@ -92,8 +88,6 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
     .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.RobotCentricFacingAngle resetHeading = new SwerveRequest.RobotCentricFacingAngle()
-    .withTargetDirection(Rotation2d.kZero);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -141,6 +135,10 @@ public class RobotContainer {
               .withVelocityY(-driver.getLeftX() * MaxSpeed)
               .withRotationalRate(-driver.getRightX() * MaxAngularRate)
       )
+    );
+
+    driver.touchpad() .onTrue(
+      Commands.runOnce(()-> drivetrain.seedFieldCentric(), drivetrain)
     );
 
     // driver.touchpad().onTrue(
@@ -192,12 +190,12 @@ public class RobotContainer {
     );
 
     //INTAKE CORAL FROM HP
-    driver.triangle().whileTrue(
-      Commands.parallel(
-        //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
-      )
-    );
+    // driver.triangle().whileTrue(
+    //   Commands.parallel(
+    //     //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+    //     s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
+    //   )
+    // );
 
     // SHOOT ALGAE (JUST PIVOT)
     driver.cross().whileTrue(
@@ -217,6 +215,7 @@ public class RobotContainer {
       )
     );
 
+
     //INTAKE ALGAE
     driver.square().whileTrue(
       Commands.parallel(
@@ -228,7 +227,7 @@ public class RobotContainer {
     );
 
     //Just Elevator and Coral Pivot Reef
-    driver.L1().whileTrue(
+    driver.triangle().whileTrue(
       Commands.deadline(
         s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
         s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)

@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -32,19 +33,21 @@ public class Elevator extends FSMSubsystem {
     private static final int ELEVATOR_MASTER_ID = 2;
     private static final int ELEVATOR_SLAVE_ID = 1;
     private static final int MAGNETIC_LIMIT_SWITCH_ID = 2;
-    private static final double kP = 66.949;
+    private static final double kP = 39.226;
     private static final double kI = 0.0;
-    private static final double kD = 7.3359;
+    private static final double kD = 3.4976;
     private static final double kS = 0.10612;
     private static final double kV = 4.6856;
     private static final double kA = 0.08795;
     private static final double kG = 0.18182;
+    private static final double MM_CRUISE_VELOCITY = 3;
+    private static final double MM_ACCELERATION = 1;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
     private static final double ELEVATOR_DOCKED_POS = 0.1;
     private static final double ELEVATOR_L1_POS = 1;
-    private static final double ELEVATOR_L2_POS = 2.5;
-    private static final double ELEVATOR_L3_POS = 3.5;
-    private static final double ELEVATOR_L4_POS = 6;
+    private static final double ELEVATOR_L2_POS = 2;
+    private static final double ELEVATOR_L3_POS = 2.5;
+    private static final double ELEVATOR_L4_POS = 3.5;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
     private static final double ELEVATOR_HP_POS = 1;
 
@@ -52,7 +55,7 @@ public class Elevator extends FSMSubsystem {
     private TalonFX m_elevatorSlave;
     private DigitalInput m_bottomLimitSwitch;
 
-    private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
+    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
     private VoltageOut voltageOut = new VoltageOut(0);
     
     private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
@@ -73,7 +76,7 @@ public class Elevator extends FSMSubsystem {
             InvertedValue.Clockwise_Positive,
             GravityTypeValue.Elevator_Static, kP, kI, kD, kS, kV, kA, kG,
             ELEVATOR_GEAR_RATIO,
-            null,null, null
+            MM_ACCELERATION,MM_CRUISE_VELOCITY, null
         );
 
         TalonFXConfigurator.configureTalonFX(
@@ -150,7 +153,7 @@ public class Elevator extends FSMSubsystem {
     protected void executeCurrentStateBehavior() {
         ElevatorStates newState = (ElevatorStates)getCurrentState();
         setControl(m_elevatorMaster, 
-            positionVoltage.withPosition(newState.getSetpointValue()));
+            motionMagicVoltage.withPosition(newState.getSetpointValue()));
     }
 
     @Override

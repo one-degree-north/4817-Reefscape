@@ -39,15 +39,17 @@ public class CoralPivot extends FSMSubsystem {
   private static final double kV = 2.847;
   private static final double kA = 0.084136;
   private static final double kG = 0.37407;
+  private static final double MM_CRUISE_VELOCITY = 1;
+  private static final double MM_ACCELERATION = 0.2;
   private static final double CORAL_PIVOT_GEAR_RATIO = 36/1;
-  private static final double CORAL_PIVOT_DOCKED_POS = 0.15;
+  private static final double CORAL_PIVOT_DOCKED_POS = -0.15;
   private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.15;
   private static final double CORAL_PIVOT_REEF_POS = -0.15;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivot;
 
-  private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
+  private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
   private VoltageOut voltageOut = new VoltageOut(0);
     
   private NeutralModeValue m_currentNeutralMode = NeutralModeValue.Brake;
@@ -66,7 +68,7 @@ public class CoralPivot extends FSMSubsystem {
       InvertedValue.Clockwise_Positive, //CHECK
       GravityTypeValue.Arm_Cosine, kP, kI, kD, kS, kV, kA, kG,
       CORAL_PIVOT_GEAR_RATIO,
-      null, null, null
+      MM_ACCELERATION, MM_CRUISE_VELOCITY, null
       );
   }
 
@@ -124,7 +126,7 @@ public class CoralPivot extends FSMSubsystem {
   @Override
   protected void executeCurrentStateBehavior() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
-    setControl(m_coralPivot, positionVoltage.withPosition(newState.getSetpointValue()));
+    setControl(m_coralPivot, motionMagicVoltage.withPosition(newState.getSetpointValue()));
   }
 
   @Override

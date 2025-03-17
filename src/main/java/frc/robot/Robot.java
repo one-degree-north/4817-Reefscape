@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.epilogue.Epilogue;
@@ -16,8 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.drivebase.CommandSwerveDrivetrain;
-import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in

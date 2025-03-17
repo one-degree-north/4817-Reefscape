@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
@@ -35,8 +33,6 @@ public class AlgaePivot extends FSMSubsystem {
 private static final int ALGAE_PIVOT_MASTER_ID = 42; // Replace with actual ID
 private static final int ALGAE_PIVOT_SLAVE_ID = 6;
 
-private static final double DOCKED_POSITION = 0.000; // Replace with actual docked position
-private static final double INTAKING_POSITION = 0.05; // Replace with actual extended position
 private static final double UPWARDS_VOLTAGE = 3;
 private static final double DOWNWARDS_VOLTAGE = -0.5;
 private static final double kP = 0;
@@ -98,12 +94,6 @@ private void configureMotor() {
 @Override
 protected void executeCurrentStateBehavior() {
     //6328 GenericSlamElevator 
-}
-
-private void setMotorPosition(double position) {
-    if (m_algaePivotMaster.isAlive()) {
-        m_algaePivotMaster.setControl(positionVoltage.withPosition(position));
-    }
 }
 
 private void setMotorVoltage(double volts){
