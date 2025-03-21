@@ -33,7 +33,7 @@ public class AlgaePivot extends FSMSubsystem {
 private static final int ALGAE_PIVOT_MASTER_ID = 42; // Replace with actual ID
 private static final int ALGAE_PIVOT_SLAVE_ID = 6;
 
-private static final double UPWARDS_VOLTAGE = 3;
+private static final double UPWARDS_VOLTAGE = 4.5;
 private static final double DOWNWARDS_VOLTAGE = -0.5;
 private static final double kP = 0;
 private static final double kI = 0.0;
@@ -55,7 +55,6 @@ private boolean slammed = false;
 private TalonFX m_algaePivotMaster;
 private TalonFX m_algaePivotSlave;
 
-private PositionVoltage positionVoltage = new PositionVoltage(0).withSlot(0);
 private VoltageOut voltageOut = new VoltageOut(0);
 private NeutralModeValue currentNeutralMode = NeutralModeValue.Brake;
 

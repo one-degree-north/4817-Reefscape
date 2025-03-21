@@ -45,12 +45,6 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 import frc.robot.subsystems.vision.PhotonRunnable;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
 @Logged
 public class RobotContainer {
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -73,7 +67,7 @@ public class RobotContainer {
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
-  public RobotMode currentMode = RobotMode.DRIVING;
+  public RobotMode currentMode = RobotMode.TUNING;
   public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
 
   private final SendableChooser<Command> autoChooser;
@@ -100,6 +94,14 @@ public class RobotContainer {
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
     .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
+  private final Thread photonThread = new Thread(
+    new PhotonRunnable(
+        kCameraName,
+        kRobotToCam,
+        drivetrain::addVisionMeasurement,
+        () -> drivetrain.getState().Pose)
+  );
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
@@ -114,20 +116,12 @@ public class RobotContainer {
         break;
         
     }
-    //operatorBindings();
+    operatorBindings();
 
     photonThread.setName("PhotonVision");
     photonThread.setDaemon(true);
     photonThread.start();
   }
-
-  private final Thread photonThread = new Thread(
-    new PhotonRunnable(
-        kCameraName,
-        kRobotToCam,
-        drivetrain::addVisionMeasurement,
-        () -> drivetrain.getState().Pose)
-  );
 
   private void registerStatesNamedCommands(){
     s_Elevator.registerState(ElevatorStates.DOCKED);
@@ -138,8 +132,8 @@ public class RobotContainer {
     s_CoralPivot.registerState(CoralPivotStates.DOCKED);
     s_AlgaePivot.registerState(AlgaePivotStates.DOCKED);
 
-    NamedCommands.registerCommand("L4 Score", 
-      s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL4));
+    NamedCommands.registerCommand("Superstructure L3", 
+      s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL3));
     NamedCommands.registerCommand("Outtake Coral", 
       s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE));
   }
@@ -160,24 +154,59 @@ public class RobotContainer {
       )
     );
 
-    driver.touchpad() .onTrue(
-      Commands.runOnce(()-> drivetrain.seedFieldCentric(), drivetrain)
-    );
-
-    // driver.touchpad().onTrue(
-    //   drivetrain.applyRequest(()->
-    //     resetHeading
-    //   )
-    // );
-
     //CORAL SCORING
     driver.R2().whileTrue(
       Commands.deadline(
         s_Superstructure.setConditionalGoalCommand(elevatorStateSupplier), 
         Commands.sequence( 
-          Commands.waitUntil(()-> driver.getR2Axis() > 0.9),
+          Commands.waitUntil(()-> driver.getR2Axis() > 0.7),
           s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
         )
+      )
+    );
+
+    driver.touchpad() .onTrue(
+      Commands.runOnce(()-> drivetrain.seedFieldCentric(), drivetrain)
+    );
+
+    //INTAKE CORAL
+    driver.triangle().whileTrue(
+      Commands.deadline(
+        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
+      )
+    );
+
+    //INTAKE ALGAE
+    driver.square().whileTrue(
+      Commands.parallel(
+        Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
+          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
+        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
+        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
+      )
+    );
+
+    //TIMED ALGAE SHOOT
+    driver.cross().whileTrue(
+      Commands.sequence(
+        Commands.deadline(
+          Commands.waitSeconds(0.9),
+          s_Superstructure.setGoalCommand(SuperstructureStates.ALGAE_EXTENDED),
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
+        Commands.parallel(
+          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
+          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
+        )
+      )
+    );
+
+    //REMOVE ALGAE FROM REEF
+    driver.R1().whileTrue(
+      Commands.parallel(
+        s_Superstructure.setConditionalGoalCommand(algaeRemovalStateSupplier),
+        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
       )
     );
 
@@ -196,21 +225,13 @@ public class RobotContainer {
     //   )
     // );
 
-    //REMOVE ALGAE FROM REEF
-    driver.R1().whileTrue(
-      Commands.parallel(
-        s_Superstructure.setConditionalGoalCommand(algaeRemovalStateSupplier),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
-      )
-    );
-
     //OUTTAKE CORAL
-    driver.circle().whileTrue(
-      Commands.parallel(
-        //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
-      )
-    );
+    // driver.circle().whileTrue(
+    //   Commands.parallel(
+    //     //s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+    //     s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
+    //   )
+    // );
 
     //INTAKE CORAL FROM HP
     // driver.triangle().whileTrue(
@@ -219,43 +240,6 @@ public class RobotContainer {
     //     s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
     //   )
     // );
-
-    // SHOOT ALGAE (JUST PIVOT)
-    driver.cross().whileTrue(
-      Commands.sequence(
-        Commands.deadline(
-          Commands.waitSeconds(0.9),
-          Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
-          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
-          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT),
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING)),
-        Commands.parallel(
-          Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
-          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
-          s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.OUTTAKING),
-          s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.SHOOT) 
-        )
-      )
-    );
-
-
-    //INTAKE ALGAE
-    driver.square().whileTrue(
-      Commands.parallel(
-        Commands.startEnd(()-> s_AlgaePivot.setGoal(AlgaePivotStates.INTAKE), 
-          ()-> s_AlgaePivot.setGoal(AlgaePivotStates.DOCKED), s_AlgaePivot),
-        s_AlgaeIndexer.setGoalCommand(AlgaeIndexerStates.INTAKING),
-        s_AlgaeIntake.setGoalCommand(AlgaeIntakeStates.INTAKE)
-      )
-    );
-
-    //Just Elevator and Coral Pivot Reef
-    driver.triangle().whileTrue(
-      Commands.deadline(
-        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
-      )
-    );
 
     // driver.povUp().whileTrue(
     //   Commands.startEnd(()->s_Elevator.setGoal(ElevatorStates.L1), 

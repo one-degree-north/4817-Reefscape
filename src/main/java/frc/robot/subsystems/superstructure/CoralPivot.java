@@ -12,7 +12,6 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -32,19 +31,19 @@ public class CoralPivot extends FSMSubsystem {
   //Constants
 
   private static final int CORAL_PIVOT_MASTER_ID = 3;
-  private static final double kP = 29.729;
+  private static final double kP = 29.102;
   private static final double kI = 0.0;
-  private static final double kD = 1.5852;
-  private static final double kS = 0.30161;
-  private static final double kV = 2.847;
-  private static final double kA = 0.084136;
-  private static final double kG = 0.37407;
+  private static final double kD = 1.5324;
+  private static final double kS = 0.042126;
+  private static final double kV = 4.1603;
+  private static final double kA = 0.086447;
+  private static final double kG = 0.22356;
   private static final double MM_CRUISE_VELOCITY = 1;
   private static final double MM_ACCELERATION = 0.2;
   private static final double CORAL_PIVOT_GEAR_RATIO = 36/1;
-  private static final double CORAL_PIVOT_DOCKED_POS = -0.15;
-  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.15;
-  private static final double CORAL_PIVOT_REEF_POS = -0.15;
+  private static final double CORAL_PIVOT_DOCKED_POS = 0.3;
+  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.3;
+  private static final double CORAL_PIVOT_REEF_POS = -0.3;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivot;

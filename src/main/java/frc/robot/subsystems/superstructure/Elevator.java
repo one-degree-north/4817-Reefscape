@@ -12,7 +12,6 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -43,10 +42,10 @@ public class Elevator extends FSMSubsystem {
     private static final double MM_CRUISE_VELOCITY = 3;
     private static final double MM_ACCELERATION = 1;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
-    private static final double ELEVATOR_DOCKED_POS = 0.1;
-    private static final double ELEVATOR_L1_POS = 1;
+    private static final double ELEVATOR_DOCKED_POS = 0.05;
+    private static final double ELEVATOR_L1_POS = 1.448;
     private static final double ELEVATOR_L2_POS = 2;
-    private static final double ELEVATOR_L3_POS = 2.5;
+    private static final double ELEVATOR_L3_POS = 3.452;
     private static final double ELEVATOR_L4_POS = 3.5;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
     private static final double ELEVATOR_HP_POS = 1;
@@ -123,8 +122,8 @@ public class Elevator extends FSMSubsystem {
 
     private final SysIdRoutine elevatorCharacterization = new SysIdRoutine(
         new SysIdRoutine.Config(
-            Volts.of(0.5).per(Second),
-            Voltage.ofBaseUnits(3.5, Volt), 
+            Volts.of(0.7).per(Second),
+            Voltage.ofBaseUnits(4, Volt), 
             null,
             (state)-> SignalLogger.writeString("ElevatorState", state.toString())),
         new SysIdRoutine.Mechanism(

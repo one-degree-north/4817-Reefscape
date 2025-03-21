@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Meters;
 
 import static org.photonvision.PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -29,7 +28,6 @@ import edu.wpi.first.networktables.RawSubscriber;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 
 /** Runnable that gets AprilTag data from PhotonVision. */
 public class PhotonRunnable implements Runnable {
