@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -18,7 +17,7 @@ public class CoralIntake extends FSMSubsystem {
   private static final int RIGHT_ROLLER_ID = 5; // Replace with actual ID
   private static final double ROLLER_INTAKE_VOLTAGE = 2.0; // Replace with actual voltage
   private static final double ROLLER_OUTTAKE_VOLTAGE = -2.0; // Replace with actual voltage
-  private static final double ROLLER_LVL1_VOLTAGE = 1.5; // Replace with actual voltage for LVL1
+  private static final double ROLLER_LVL1_VOLTAGE = 1; // Replace with actual voltage for LVL1
 
   private TalonFX m_leftRoller;
   private TalonFX m_rightRoller;
@@ -105,7 +104,7 @@ public class CoralIntake extends FSMSubsystem {
   }
 
   public Command setGoalCommand(CoralIntakeStates goal) {
-        return startEnd(()-> setGoal(goal), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
+    return startEnd(()-> setGoal(goal), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
   }
 
   @Override

@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -104,7 +105,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    autoChooser = AutoBuilder.buildAutoChooser("Default_Auto");
+    autoChooser = AutoBuilder.buildAutoChooser();
     //visionCommand.schedule();
     registerStatesNamedCommands();
     switch(currentMode){
@@ -121,6 +122,8 @@ public class RobotContainer {
     photonThread.setName("PhotonVision");
     photonThread.setDaemon(true);
     photonThread.start();
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void registerStatesNamedCommands(){
@@ -160,7 +163,8 @@ public class RobotContainer {
         s_Superstructure.setConditionalGoalCommand(elevatorStateSupplier), 
         Commands.sequence( 
           Commands.waitUntil(()-> driver.getR2Axis() > 0.7),
-          s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
+          s_CoralIntake.setGoalCommand(
+            CoralIntakeStates.ROLLER_OUTTAKE)
         )
       )
     );
@@ -279,18 +283,18 @@ public class RobotContainer {
 
   private void operatorBindings(){
     // Bind operator buttons to change the elevatorState variable
-    operator.circle().onTrue(
+    operator.triangle().onTrue(
       Commands.runOnce(() -> {
         elevatorState = SuperstructureStates.CORAL_LVL1; // Set to Level 1
     }));
 
-    operator.cross().onTrue(
+    operator.circle().onTrue(
       Commands.runOnce(() -> {
         elevatorState = SuperstructureStates.CORAL_LVL2; // Set to Level 2
         algaeRemovalState = SuperstructureStates.ALGAE_REMOVE_LVL2;
     }));
 
-    operator.triangle().onTrue(
+    operator.cross().onTrue(
       Commands.runOnce(() -> {
         elevatorState = SuperstructureStates.CORAL_LVL3; // Set to Level 3
         algaeRemovalState = SuperstructureStates.ALGAE_REMOVE_LVL3;
