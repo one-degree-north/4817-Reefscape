@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.752742346938776,
-        "y": 7.2596619897959185
+        "x": 7.707971938775511,
+        "y": 7.289508928571427
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.061778986733053,
-        "y": 7.2553965155154145
+        "x": 8.20261642104927,
+        "y": 7.557658265528437
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.446938775510205,
-        "y": 7.2596619897959185
+        "x": 5.02920918367347,
+        "y": 5.252455357142857
       },
       "prevControl": {
-        "x": 6.196945571342898,
-        "y": 7.261505321063795
+        "x": 4.769811795906255,
+        "y": 5.127368033584751
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": null
+      "isLocked": true,
+      "linkedName": "K Pos"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": null,
