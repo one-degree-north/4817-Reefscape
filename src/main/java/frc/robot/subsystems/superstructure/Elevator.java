@@ -105,7 +105,6 @@ public class Elevator extends FSMSubsystem {
     private void resetElevatorPosition() {
         m_elevatorMaster.setPosition(0);
         m_elevatorSlave.setPosition(0);
-        System.err.println("Elevator position reset");
     }
 
     private void toggleIdleMode() {

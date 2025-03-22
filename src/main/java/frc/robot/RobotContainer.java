@@ -48,7 +48,7 @@ import frc.robot.subsystems.vision.PhotonRunnable;
 
 @Logged
 public class RobotContainer {
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public final CommandSwerveDrivetrain drivetrain;
   // private final PhotonVisionCommand visionCommand = new PhotonVisionCommand(drivetrain::addVisionMeasurement);
   private final CommandPS5Controller driver = new CommandPS5Controller(0);
   private final CommandPS5Controller operator = new CommandPS5Controller(1);
@@ -93,13 +93,7 @@ public class RobotContainer {
   private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
     .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  private final Thread photonThread = new Thread(
-    new PhotonRunnable(
-        kCameraName,
-        kRobotToCam,
-        drivetrain::addVisionMeasurement,
-        () -> drivetrain.getState().Pose)
-  );
+  private final Thread photonThread;
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -117,6 +111,15 @@ public class RobotContainer {
     }
     operatorBindings();
 
+    drivetrain = TunerConstants.createDrivetrain();
+
+    photonThread = new Thread(
+      new PhotonRunnable(
+          kCameraName,
+          kRobotToCam,
+          drivetrain::addVisionMeasurement,
+          () -> drivetrain.getState().Pose)
+    );
     photonThread.setName("PhotonVision");
     photonThread.setDaemon(true);
     photonThread.start();
@@ -155,7 +158,7 @@ public class RobotContainer {
       )
     );
 
-    //CORAL L2
+    //CONDITIONAL CORAL SCORING
     driver.R2().whileTrue(
       Commands.deadline(
         s_Superstructure.setConditionalGoalCommand(()-> elevatorState), 
@@ -168,14 +171,13 @@ public class RobotContainer {
       )
     );
     
-    //CORAL L3
+    //CORAL L1
     driver.L2().whileTrue(
       Commands.deadline(
-        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL3), 
+        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL1), 
         Commands.sequence( 
           Commands.waitUntil(()-> driver.getL2Axis() > 0.95),
-          s_CoralIntake.setGoalCommandBasedOnSuperstructure(
-            ()-> elevatorState)
+          s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_LVL1)
         )
       )
     );

@@ -103,6 +103,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    s_robotContainer.drivetrain.seedFieldCentric();
+    
     SignalLogger.start();
   }
 

@@ -29,7 +29,7 @@ public class Superstructure extends FSMSubsystem {
     }
 
     public Command setConditionalGoalCommand(Supplier<SuperstructureStates> goal) {
-        return setGoalCommand(goal.get());
+        return startEnd(()-> setGoal(goal.get()), ()-> setGoal(SuperstructureStates.STOWED));
     }
 
     public Command zeroSuperstructure(){
