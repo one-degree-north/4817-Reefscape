@@ -40,6 +40,8 @@ public class CoralPivot extends FSMSubsystem {
   private static final double kG = 0.22356;
   private static final double MM_CRUISE_VELOCITY = 1.5;
   private static final double MM_ACCELERATION = 0.3;
+  private static final double CORAL_PIVOT_VOLTAGEUP = 0.5;
+  private static final double CORAL_PIVOT_VOLTAGEDOWN = -0.5;
   private static final double CORAL_PIVOT_GEAR_RATIO = 36/1;
   private static final double CORAL_PIVOT_DOCKED_POS = 0.3;
   private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.11;
@@ -122,11 +124,19 @@ public class CoralPivot extends FSMSubsystem {
     return Math.abs(m_coralPivot.getPosition().getValueAsDouble() - 
         ((CoralPivotStates)getDesiredState()).getSetpointValue()) < CORAL_PIVOT_ALLOWED_ERROR;
   }
+  
+  public Command setStartStopGoalCommand(CoralPivotStates goal){
+    return startEnd(()-> setGoal(goal), ()-> stop());
+  }
 
   @Override
   protected void executeCurrentStateBehavior() {
     CoralPivotStates newState = (CoralPivotStates)getCurrentState();
-    setControl(m_coralPivot, motionMagicVoltage.withPosition(newState.getSetpointValue()));
+    if (newState == CoralPivotStates.VOLTAGEDOWN || newState == CoralPivotStates.VOLTAGEUP){
+      setControl(m_coralPivot, voltageOut.withOutput(newState.getSetpointValue()));
+    } else{
+      setControl(m_coralPivot, motionMagicVoltage.withPosition(newState.getSetpointValue()));
+    }
   }
 
   @Override
@@ -167,6 +177,8 @@ public class CoralPivot extends FSMSubsystem {
     DOCKED(CORAL_PIVOT_DOCKED_POS),
     HUMAN_PLAYER(CORAL_PIVOT_HUMAN_PLAYER_POS),
     ALGAE_REMOVE(CORAL_PIVOT_ALGAE_REMOVE_POS),
+    VOLTAGEUP(CORAL_PIVOT_VOLTAGEUP),
+    VOLTAGEDOWN(CORAL_PIVOT_VOLTAGEDOWN),
     REEF(CORAL_PIVOT_REEF_POS);
 
     private final double setpointValue;

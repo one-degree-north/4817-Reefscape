@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -97,7 +95,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    autoChooser = AutoBuilder.buildAutoChooser();
+    drivetrain = TunerConstants.createDrivetrain();
     //visionCommand.schedule();
     registerStatesNamedCommands();
     switch(currentMode){
@@ -110,8 +108,8 @@ public class RobotContainer {
         
     }
     operatorBindings();
-
-    drivetrain = TunerConstants.createDrivetrain();
+    
+    autoChooser = AutoBuilder.buildAutoChooser();
 
     photonThread = new Thread(
       new PhotonRunnable(
@@ -322,6 +320,22 @@ public class RobotContainer {
       Commands.runOnce(() -> {
         elevatorState = SuperstructureStates.CORAL_LVL4; // Set to Level 4
     }));
+
+    operator.L2().whileTrue(
+      s_Elevator.setStartStopGoalCommand(ElevatorStates.VOLTAGEUP)
+    );
+
+    operator.L1().whileTrue(
+      s_Elevator.setStartStopGoalCommand(ElevatorStates.VOLTAGEDOWN)
+    );
+
+    operator.R2().whileTrue(
+      s_CoralPivot.setStartStopGoalCommand(CoralPivotStates.VOLTAGEUP)
+    );
+
+    operator.R1().whileTrue(
+      s_CoralPivot.setStartStopGoalCommand(CoralPivotStates.VOLTAGEDOWN)
+    );
   }
 
   private void tuningBindings() {

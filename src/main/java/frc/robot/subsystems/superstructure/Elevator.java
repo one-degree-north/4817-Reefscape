@@ -41,6 +41,8 @@ public class Elevator extends FSMSubsystem {
     private static final double kG = 0.18182;
     private static final double MM_CRUISE_VELOCITY = 3.5;
     private static final double MM_ACCELERATION = 1.3;
+    private static final double ELEVATOR_VOLTAGEUP = 3.5;
+    private static final double ELEVATOR_VOLTAGEDOWN = -2;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
     private static final double ELEVATOR_DOCKED_POS = 0.05;
     private static final double ELEVATOR_L1_POS = 1.44;
@@ -94,6 +96,10 @@ public class Elevator extends FSMSubsystem {
 
     public boolean isElevatorDown() {
         return m_bottomLimitSwitch.get();
+    }
+
+    public Command setStartStopGoalCommand(ElevatorStates goal){
+        return startEnd(()-> setGoal(goal), ()-> stop());
     }
 
     private void setControl(TalonFX motor, ControlRequest req) {
@@ -150,8 +156,13 @@ public class Elevator extends FSMSubsystem {
     @Override
     protected void executeCurrentStateBehavior() {
         ElevatorStates newState = (ElevatorStates)getCurrentState();
-        setControl(m_elevatorMaster, 
+        if (newState == ElevatorStates.VOLTAGEDOWN || newState == ElevatorStates.VOLTAGEUP){
+            setControl(m_elevatorMaster, voltageOut.withOutput(newState.getSetpointValue()));
+        }
+        else{
+            setControl(m_elevatorMaster, 
             motionMagicVoltage.withPosition(newState.getSetpointValue()));
+        } 
     }
 
     @Override
@@ -196,6 +207,8 @@ public class Elevator extends FSMSubsystem {
         L2(ELEVATOR_L2_POS),
         L3(ELEVATOR_L3_POS),
         L4(ELEVATOR_L4_POS),
+        VOLTAGEUP(ELEVATOR_VOLTAGEUP),
+        VOLTAGEDOWN(ELEVATOR_VOLTAGEDOWN),
         HUMAN_PLAYER(ELEVATOR_HP_POS);
 
     private final double setpointValue;
