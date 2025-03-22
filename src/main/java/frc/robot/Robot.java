@@ -9,6 +9,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,8 +27,9 @@ public class Robot extends TimedRobot {
 
   private final DigitalInput zeroSwitch = new DigitalInput(1);
 
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer s_robotContainer;
   private final Field2d m_field = new Field2d();
+  
 
   private boolean haveReset = false;
   /**
@@ -38,7 +40,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     
-    m_robotContainer = new RobotContainer();
+    s_robotContainer = new RobotContainer();
     Epilogue.bind(this);
   }
 
@@ -55,29 +57,32 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
-    SmartDashboard.putString("Elevator Supplier State", m_robotContainer.elevatorStateSupplier.get().toString());
-    SmartDashboard.putString("Algae Removal Supplier State", m_robotContainer.algaeRemovalStateSupplier.get().toString());
+    SmartDashboard.putString("Elevator Supplier State", s_robotContainer.elevatorState.toString());
+    SmartDashboard.putString("Algae Removal Supplier State", s_robotContainer.algaeRemovalState.toString());
     SmartDashboard.putBoolean("ZeroSwitchOn", zeroSwitch.get());
     SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     CommandScheduler.getInstance().run();
-    m_field.setRobotPose(m_robotContainer.drivetrain.getState().Pose);
+    m_field.setRobotPose(s_robotContainer.drivetrain.getState().Pose);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    s_robotContainer.stowAll();
+  }
 
   @Override
   public void disabledPeriodic() {
     if (zeroSwitch.get() && haveReset == false) {
-      m_robotContainer.zeroAndToggleIdleModeAll();
+      s_robotContainer.zeroAndToggleIdleModeAll();
     }
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = s_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

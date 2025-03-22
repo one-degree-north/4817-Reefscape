@@ -28,7 +28,7 @@ public class AlgaeIntake extends FSMSubsystem {
     // Constants
     private static final int ALGAE_INTAKE_MASTER_ID = 41; // Replace with actual ID
     private static final int ALGAE_INTAKE_SLAVE_ID = -1; // Replace with actual ID or -1 if no follower
-    private static final double INTAKE_VOLTAGE = 3; // Voltage for intake
+    private static final double INTAKE_VOLTAGE = 4; // Voltage for intake
     private static final double OUTTAKE_VOLTAGE = -INTAKE_VOLTAGE; // Voltage for outtake
     private static final double SHOOT_RPM = 5700.0; // RPM for shooting
     private static final double RPM_TOLERANCE = 50.0; // Tolerance for reaching desired RPM

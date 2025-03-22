@@ -128,7 +128,7 @@ public class Superstructure extends FSMSubsystem {
                         AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
-                        CoralPivot.CoralPivotStates.REEF);
+                        CoralPivot.CoralPivotStates.ALGAE_REMOVE);
                 s_elevator
                     .setGoal(
                         Elevator.ElevatorStates.L2);
@@ -139,7 +139,7 @@ public class Superstructure extends FSMSubsystem {
                         AlgaePivot.AlgaePivotStates.DOCKED);
                 s_coralPivot
                     .setGoal(
-                        CoralPivot.CoralPivotStates.REEF);
+                        CoralPivot.CoralPivotStates.ALGAE_REMOVE);
                 s_elevator
                     .setGoal(
                         Elevator.ElevatorStates.L3);

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.rollers;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -8,6 +10,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.superstructure.Superstructure.SuperstructureStates;
 import frc.utils.FSMSubsystem;
 import frc.utils.TalonFXConfigurator;
 
@@ -15,7 +19,7 @@ public class CoralIntake extends FSMSubsystem {
   // Constants
   private static final int LEFT_ROLLER_ID = 4; // Replace with actual ID
   private static final int RIGHT_ROLLER_ID = 5; // Replace with actual ID
-  private static final double ROLLER_INTAKE_VOLTAGE = 2.0; // Replace with actual voltage
+  private static final double ROLLER_INTAKE_VOLTAGE = 4; // Replace with actual voltage
   private static final double ROLLER_OUTTAKE_VOLTAGE = -2.0; // Replace with actual voltage
   private static final double ROLLER_LVL1_VOLTAGE = 1; // Replace with actual voltage for LVL1
 
@@ -105,6 +109,22 @@ public class CoralIntake extends FSMSubsystem {
 
   public Command setGoalCommand(CoralIntakeStates goal) {
     return startEnd(()-> setGoal(goal), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
+  }
+
+  public Command setGoalCommandBasedOnSuperstructure(Supplier<SuperstructureStates> goal){
+    var state = goal.get();
+    if (state == SuperstructureStates.CORAL_LVL1){
+      Commands.print("L1 Roller");
+      return startEnd(()-> setGoal(CoralIntakeStates.ROLLER_LVL1), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
+    }
+    else if (state == SuperstructureStates.CORAL_HP){
+      Commands.print("Human Player Intaking");
+      return startEnd(()-> setGoal(CoralIntakeStates.ROLLER_INTAKE), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
+    }
+    else{
+      Commands.print("Roller Outtaking");
+      return startEnd(()-> setGoal(CoralIntakeStates.ROLLER_OUTTAKE), ()-> setGoal(CoralIntakeStates.ROLLER_IDLE));
+    }
   }
 
   @Override

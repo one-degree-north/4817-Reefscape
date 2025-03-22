@@ -39,14 +39,14 @@ public class Elevator extends FSMSubsystem {
     private static final double kV = 4.6856;
     private static final double kA = 0.08795;
     private static final double kG = 0.18182;
-    private static final double MM_CRUISE_VELOCITY = 3;
-    private static final double MM_ACCELERATION = 1;
+    private static final double MM_CRUISE_VELOCITY = 3.5;
+    private static final double MM_ACCELERATION = 1.3;
     private static final double ELEVATOR_GEAR_RATIO = 39.2/1;
     private static final double ELEVATOR_DOCKED_POS = 0.05;
-    private static final double ELEVATOR_L1_POS = 1.448;
-    private static final double ELEVATOR_L2_POS = 2;
-    private static final double ELEVATOR_L3_POS = 3.452;
-    private static final double ELEVATOR_L4_POS = 3.5;
+    private static final double ELEVATOR_L1_POS = 1.44;
+    private static final double ELEVATOR_L2_POS = 1.9;
+    private static final double ELEVATOR_L3_POS = 2.9;
+    private static final double ELEVATOR_L4_POS = 3.4;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
     private static final double ELEVATOR_HP_POS = 1;
 
@@ -89,7 +89,7 @@ public class Elevator extends FSMSubsystem {
         );
 
         Follower followerConfig = new Follower(m_elevatorMaster.getDeviceID(), false);
-        m_elevatorSlave.setControl(followerConfig);
+            m_elevatorSlave.setControl(followerConfig);
     }
 
     public boolean isElevatorDown() {
