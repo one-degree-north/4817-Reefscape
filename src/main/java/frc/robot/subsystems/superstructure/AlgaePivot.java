@@ -32,8 +32,8 @@ public class AlgaePivot extends FSMSubsystem {
 private static final int ALGAE_PIVOT_MASTER_ID = 42; // Replace with actual ID
 private static final int ALGAE_PIVOT_SLAVE_ID = 6;
 
-private static final double UPWARDS_VOLTAGE = 4.5;
-private static final double DOWNWARDS_VOLTAGE = -0.5;
+private static final double UPWARDS_VOLTAGE = 4;
+private static final double DOWNWARDS_VOLTAGE = -1;
 private static final double kP = 0;
 private static final double kI = 0.0;
 private static final double kD = 0.0;
@@ -210,6 +210,10 @@ public void periodic() {
         setMotorVoltage(newState.getSetpointValue());
         } else {
             stop();
+    }
+
+    if (lastGoal == AlgaePivotStates.DOCKED){
+        setMotorVoltage(0);
     }
 
     if (DriverStation.isDisabled()){

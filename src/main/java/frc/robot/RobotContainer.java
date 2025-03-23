@@ -60,14 +60,14 @@ public class RobotContainer {
   private final AlgaeIntake s_AlgaeIntake = new AlgaeIntake(false);
   private final CoralIntake s_CoralIntake = new CoralIntake();
 
-  private final LEDs s_Leds = new LEDs();
+  //private final LEDs s_Leds = new LEDs();
 
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
   private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public RobotMode currentMode = RobotMode.DRIVING;
-  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.SWERVE;
+  public TuningSubsystem currentTuningSubsystem = TuningSubsystem.ELEVATOR;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -138,13 +138,17 @@ public class RobotContainer {
       s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL3));
     NamedCommands.registerCommand("Outtake Coral", 
       s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE));
+    NamedCommands.registerCommand("Superstructure L1", 
+      s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_LVL1));
+    NamedCommands.registerCommand("Outtake Coral L1", 
+      s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_LVL1));
   }
 
   public void zeroAndToggleIdleModeAll(){
     s_AlgaePivot.zeroAndToggleIdleMode();
     s_CoralPivot.zeroAndToggleIdleMode();
     s_Elevator.zeroAndToggleIdleMode();
-    s_Leds.zeroed = true;
+    //s_Leds.zeroed = true;
   }
 
   private void driverBindings() {
@@ -157,16 +161,20 @@ public class RobotContainer {
     );
 
     //CONDITIONAL CORAL SCORING
+    // driver.R2().whileTrue(
+    //   Commands.deadline(
+    //     s_Superstructure.setConditionalGoalCommand(()-> elevatorState), 
+    //     Commands.sequence( 
+    //       Commands.waitUntil(()-> driver.getR2Axis() > 0.95),
+    //       s_CoralIntake.setGoalCommandBasedOnSuperstructure(
+    //         (()-> elevatorState)
+    //       )
+    //     )
+    //   )
+    // );
+
     driver.R2().whileTrue(
-      Commands.deadline(
-        s_Superstructure.setConditionalGoalCommand(()-> elevatorState), 
-        Commands.sequence( 
-          Commands.waitUntil(()-> driver.getR2Axis() > 0.95),
-          s_CoralIntake.setGoalCommandBasedOnSuperstructure(
-            (()-> elevatorState)
-          )
-        )
-      )
+      s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_LVL1)
     );
     
     //CORAL L1
@@ -185,11 +193,15 @@ public class RobotContainer {
     );
 
     //INTAKE CORAL
+    // driver.triangle().whileTrue(
+    //   Commands.deadline(
+    //     s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
+    //     s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
+    //   )
+    // );
+
     driver.triangle().whileTrue(
-      Commands.deadline(
-        s_Superstructure.setGoalCommand(SuperstructureStates.CORAL_HP),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
-      )
+      s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
     );
 
     //INTAKE ALGAE
@@ -223,11 +235,15 @@ public class RobotContainer {
     );
 
     //REMOVE ALGAE FROM REEF
+    // driver.R1().whileTrue(
+    //   Commands.parallel(
+    //     s_Superstructure.setConditionalGoalCommand(()-> algaeRemovalState),
+    //     s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
+    //   )
+    // );
+
     driver.R1().whileTrue(
-      Commands.parallel(
-        s_Superstructure.setConditionalGoalCommand(()-> algaeRemovalState),
-        s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_INTAKE)
-      )
+      s_CoralIntake.setGoalCommand(CoralIntakeStates.ROLLER_OUTTAKE)
     );
 
     //ALGAE SHOOT

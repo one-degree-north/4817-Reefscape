@@ -40,13 +40,13 @@ public class CoralPivot extends FSMSubsystem {
   private static final double kG = 0.22356;
   private static final double MM_CRUISE_VELOCITY = 1.5;
   private static final double MM_ACCELERATION = 0.3;
-  private static final double CORAL_PIVOT_VOLTAGEUP = 0.5;
+  private static final double CORAL_PIVOT_VOLTAGEUP = 0.7;
   private static final double CORAL_PIVOT_VOLTAGEDOWN = -0.5;
   private static final double CORAL_PIVOT_GEAR_RATIO = 36/1;
-  private static final double CORAL_PIVOT_DOCKED_POS = 0.3;
-  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 0.11;
-  private static final double CORAL_PIVOT_ALGAE_REMOVE_POS = -0.05;
-  private static final double CORAL_PIVOT_REEF_POS = -0.25;
+  private static final double CORAL_PIVOT_DOCKED_POS = 100; //0.3;
+  private static final double CORAL_PIVOT_HUMAN_PLAYER_POS = 100; //0.11;
+  private static final double CORAL_PIVOT_ALGAE_REMOVE_POS = -100;//-0.05;
+  private static final double CORAL_PIVOT_REEF_POS = -100;//-0.25;
   private static final double CORAL_PIVOT_ALLOWED_ERROR = 0.05;
 
   private TalonFX m_coralPivot;

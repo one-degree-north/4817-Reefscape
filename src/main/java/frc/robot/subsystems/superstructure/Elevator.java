@@ -50,7 +50,7 @@ public class Elevator extends FSMSubsystem {
     private static final double ELEVATOR_L3_POS = 2.9;
     private static final double ELEVATOR_L4_POS = 3.4;
     private static final double ELEVATOR_ALLOWED_ERROR = 0.05;
-    private static final double ELEVATOR_HP_POS = 1;
+    private static final double ELEVATOR_HP_POS = 0.3;
 
     private TalonFX m_elevatorMaster;
     private TalonFX m_elevatorSlave;

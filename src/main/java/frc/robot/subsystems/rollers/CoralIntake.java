@@ -19,9 +19,9 @@ public class CoralIntake extends FSMSubsystem {
   // Constants
   private static final int LEFT_ROLLER_ID = 4; // Replace with actual ID
   private static final int RIGHT_ROLLER_ID = 5; // Replace with actual ID
-  private static final double ROLLER_INTAKE_VOLTAGE = 4; // Replace with actual voltage
-  private static final double ROLLER_OUTTAKE_VOLTAGE = -2.0; // Replace with actual voltage
-  private static final double ROLLER_LVL1_VOLTAGE = -1; // Replace with actual voltage for LVL1
+  private static final double ROLLER_INTAKE_VOLTAGE = 3; // Replace with actual voltage
+  private static final double ROLLER_OUTTAKE_VOLTAGE = -5.0; // Replace with actual voltage
+  private static final double ROLLER_LVL1_VOLTAGE = -6; // Replace with actual voltage for LVL1
 
   private TalonFX m_leftRoller;
   private TalonFX m_rightRoller;
@@ -73,7 +73,7 @@ public class CoralIntake extends FSMSubsystem {
     CoralIntakeStates newState = (CoralIntakeStates)getCurrentState();
     switch (newState) {
       case ROLLER_LVL1:
-        setRollersVoltage(ROLLER_LVL1_VOLTAGE, 0); // Only left roller moves
+        setRollersVoltage(ROLLER_LVL1_VOLTAGE, ROLLER_LVL1_VOLTAGE/12); // Only left roller moves
         break;
       default:
         setRollersVoltage(newState.getSetpointValue(), newState.getSetpointValue());
